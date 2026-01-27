@@ -10,7 +10,7 @@
       "priceWholesale": 11000,
       "unit": "kg",
       "stock": 45,
-      "image": "/placeholder/castanas.jpg",
+      "image": "/products/castanas.png",
       "isNew": true
     },
     {
@@ -35,7 +35,7 @@
       "priceWholesale": 5800,
       "unit": "kg",
       "stock": 40,
-      "image": "/placeholder/nueces.jpg"
+      "image": "/products/nueces.png"
     },
     {
       "id": "1",
@@ -47,7 +47,7 @@
       "priceWholesale": 9500,
       "unit": "kg",
       "stock": 50,
-      "image": "/placeholder/almendras.jpg",
+      "image": "/products/almendras.png",
       "isBestSeller": true
     },
     {
@@ -60,7 +60,7 @@
       "priceWholesale": 9200,
       "unit": "kg",
       "stock": 35,
-      "image": "/placeholder/almendras.jpg"
+      "image": "/products/almendras.png"
     },
     {
       "id": "3",
@@ -120,7 +120,7 @@
       "priceWholesale": 2500,
       "unit": "250g",
       "stock": 100,
-      "image": "/placeholder/pimenton.jpg"
+      "image": "/products/pimenton.png"
     },
     {
       "id": "6",
@@ -132,7 +132,7 @@
       "priceWholesale": 1900,
       "unit": "250g",
       "stock": 80,
-      "image": "/placeholder/curcuma.jpg"
+      "image": "/products/curcuma.png"
     },
     {
       "id": "7",
@@ -182,7 +182,7 @@
       "priceWholesale": 4000,
       "unit": "kg",
       "stock": 100,
-      "image": "/placeholder/mix.jpg"
+      "image": "/products/mix-energetico.png"
     },
     {
       "id": "13",

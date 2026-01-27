@@ -2,7 +2,6 @@ import { products } from '@/lib/data';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import AddToCartClient from './AddToCart';
-import { useStore } from '@/context/StoreContext'; // This won't work in Server Component directly, but we pass data to Client Component
 
 export async function generateStaticParams() {
     return products.map((product) => ({

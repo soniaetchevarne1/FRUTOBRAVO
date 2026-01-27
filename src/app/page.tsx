@@ -75,7 +75,7 @@ export default function Home() {
                 </div>
               </div>
               <p className="body-lg" style={{ fontSize: '1.3rem', marginBottom: '2.5rem', maxWidth: '700px', color: 'rgba(255,255,255,0.95)', fontWeight: 600, textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
-                Descubrí nuestra selección <strong style={{ color: 'var(--secondary)' }}>premium</strong> de frutos secos, especias y harinas.
+                Descubrí nuestra selección <strong style={{ color: 'var(--secondary)' }}>premium</strong> de frutos secos, especias, harinas y suplementos.
                 <span className={styles.highlight}> ¡Venta minorista y mayorista con envíos a todo el país!</span>
               </p>
               <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-start', alignItems: 'center' }}>
@@ -92,6 +92,46 @@ export default function Home() {
           {/* Slider Controls */}
           <button onClick={prevSlide} className={styles.sliderBtnLeft}><ChevronLeft /></button>
           <button onClick={nextSlide} className={styles.sliderBtnRight}><ChevronRight /></button>
+        </section>
+
+        {/* Featured Products */}
+        <section className="section" style={{ background: 'white' }}>
+          <div className="container">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
+              <h2 className="h2" style={{ fontSize: '2.5rem' }}>
+                ⭐ <span style={{ color: 'var(--primary)' }}>Favoritos</span> del Equipo
+              </h2>
+              <Link href="/tienda" className="btn-text" style={{ color: 'var(--primary)', fontWeight: 700, fontSize: '1.1rem' }}>
+                VER TODA LA TIENDA →
+              </Link>
+            </div>
+
+            <div className="grid-cols-4">
+              {[
+                { name: 'Almendras Premium', price: '$12.000', img: '/products/almendras.png', badge: '🔥 TOP' },
+                { name: 'Nueces Mariposa', price: '$10.500', img: '/placeholder/nueces.jpg', badge: '⚡ NUEVO' },
+                { name: 'Mix Energético', price: '$5.500', img: '/products/mix-energetico.png', badge: '💪 POWER' },
+                { name: 'Castañas de Cajú', price: '$14.000', img: '/products/castanas.png', badge: '👑 PREMIUM' }
+              ].map((prod, i) => (
+                <div key={i} className={`card ${styles.productCard}`} style={{ overflow: 'hidden', border: '2px solid #eee', position: 'relative' }}>
+                  <div className={styles.productBadge}>{prod.badge}</div>
+                  <div style={{ height: '200px', overflow: 'hidden', position: 'relative' }}>
+                    <img src={prod.img} alt={prod.name} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s ease' }} className={styles.productImage} />
+                  </div>
+                  <div style={{ padding: '1.25rem' }}>
+                    <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '0.5rem' }}>{prod.name}</h3>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.25rem', fontWeight: 600 }}>✨ Cosecha Seleccionada</p>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontWeight: 900, fontSize: '1.4rem', color: 'var(--primary)' }}>{prod.price}</span>
+                      <Link href="/tienda" className={styles.addBtnBrave} style={{ textDecoration: 'none' }}>
+                        <span>+</span>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </section>
 
         {/* Power-Up Value Props */}
@@ -125,46 +165,6 @@ export default function Home() {
                 <p style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}>Recibí tu pedido en la puerta de tu casa o negocio. ¡Velocidad máxima!</p>
                 <div className={styles.powerBadge}>PODER AZUL</div>
               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Featured Products */}
-        <section className="section" style={{ background: 'white' }}>
-          <div className="container">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
-              <h2 className="h2" style={{ fontSize: '2.5rem' }}>
-                ⭐ <span style={{ color: 'var(--primary)' }}>Favoritos</span> del Equipo
-              </h2>
-              <Link href="/tienda" className="btn-text" style={{ color: 'var(--primary)', fontWeight: 700, fontSize: '1.1rem' }}>
-                VER TODA LA TIENDA →
-              </Link>
-            </div>
-
-            <div className="grid-cols-4">
-              {[
-                { name: 'Almendras Premium', price: '$12.000', img: '/placeholder/almendras.jpg', badge: '🔥 TOP' },
-                { name: 'Nueces Mariposa', price: '$10.500', img: '/placeholder/nueces.jpg', badge: '⚡ NUEVO' },
-                { name: 'Mix Energético', price: '$5.500', img: '/placeholder/mix.jpg', badge: '💪 POWER' },
-                { name: 'Castañas de Cajú', price: '$14.000', img: '/placeholder/castanas.jpg', badge: '👑 PREMIUM' }
-              ].map((prod, i) => (
-                <div key={i} className={`card ${styles.productCard}`} style={{ overflow: 'hidden', border: '2px solid #eee', position: 'relative' }}>
-                  <div className={styles.productBadge}>{prod.badge}</div>
-                  <div style={{ height: '200px', overflow: 'hidden', position: 'relative' }}>
-                    <img src={prod.img} alt={prod.name} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s ease' }} className={styles.productImage} />
-                  </div>
-                  <div style={{ padding: '1.25rem' }}>
-                    <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '0.5rem' }}>{prod.name}</h3>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.25rem', fontWeight: 600 }}>✨ Cosecha Seleccionada</p>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontWeight: 900, fontSize: '1.4rem', color: 'var(--primary)' }}>{prod.price}</span>
-                      <Link href="/tienda" className={styles.addBtnBrave} style={{ textDecoration: 'none' }}>
-                        <span>+</span>
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         </section>

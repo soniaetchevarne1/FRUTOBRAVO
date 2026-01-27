@@ -22,19 +22,23 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
     // Load cart from localStorage on mount
     useEffect(() => {
-        const savedCart = localStorage.getItem('sonia_cart');
-        if (savedCart) {
-            try {
-                setCart(JSON.parse(savedCart));
-            } catch (e) {
-                console.error('Error parsing cart', e);
+        if (typeof window !== 'undefined') {
+            const savedCart = localStorage.getItem('sonia_cart');
+            if (savedCart) {
+                try {
+                    setCart(JSON.parse(savedCart));
+                } catch (e) {
+                    console.error('Error parsing cart', e);
+                }
             }
         }
     }, []);
 
     // Save cart to localStorage on change
     useEffect(() => {
-        localStorage.setItem('sonia_cart', JSON.stringify(cart));
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('sonia_cart', JSON.stringify(cart));
+        }
     }, [cart]);
 
     const addToCart = (product: Product, quantity: number) => {
