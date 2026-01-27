@@ -3,6 +3,7 @@
 import { useStore } from "@/context/StoreContext";
 import { X, ShoppingBag, Trash2, Plus, Minus } from "lucide-react";
 import styles from "./page.module.css";
+import Link from 'next/link';
 
 export default function SideCart({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
     const { cart, removeFromCart, updateQuantity, cartTotal, isWholesale } = useStore();
@@ -168,20 +169,26 @@ export default function SideCart({ isOpen, onClose }: { isOpen: boolean, onClose
                         </span>
                     </div>
 
+
                     {cart.length > 0 && (
-                        <button style={{
-                            width: '100%',
-                            padding: '1rem',
-                            backgroundColor: '#D4AF37',
-                            color: 'white',
-                            borderRadius: '12px',
-                            border: 'none',
-                            fontWeight: 900,
-                            fontSize: '0.95rem',
-                            cursor: 'pointer'
-                        }}>
-                            ENVIAR PEDIDO 🚀
-                        </button>
+                        <Link href="/checkout" style={{ width: '100%' }}>
+                            <button
+                                onClick={onClose}
+                                style={{
+                                    width: '100%',
+                                    padding: '1rem',
+                                    backgroundColor: '#D4AF37',
+                                    color: 'white',
+                                    borderRadius: '12px',
+                                    border: 'none',
+                                    fontWeight: 900,
+                                    fontSize: '0.95rem',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                ENVIAR PEDIDO 🚀
+                            </button>
+                        </Link>
                     )}
 
                     {/* Mas dibujos alegres */}
