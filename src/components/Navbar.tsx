@@ -8,7 +8,7 @@ import { useStore } from '@/context/StoreContext';
 import NavbarSearch from './NavbarSearch';
 
 export default function Navbar() {
-    const { cartCount } = useStore();
+    const { cartCount, openCart } = useStore();
 
     return (
         <nav className={styles.navbar}>
@@ -35,10 +35,10 @@ export default function Navbar() {
                         </Suspense>
                     </div>
                     <Link href="/cuenta" aria-label="Cuenta" className={styles.iconBtn}><User size={20} /></Link>
-                    <Link href="/carrito" aria-label="Carrito" className={`${styles.iconBtn} ${styles.cartBtn}`}>
+                    <button onClick={openCart} aria-label="Carrito" className={`${styles.iconBtn} ${styles.cartBtn}`}>
                         <ShoppingCart size={20} />
                         {cartCount > 0 && <span className={styles.badge}>{cartCount}</span>}
-                    </Link>
+                    </button>
                     <button className={styles.mobileMenu} aria-label="Menu"><Menu size={24} /></button>
                 </div>
             </div>

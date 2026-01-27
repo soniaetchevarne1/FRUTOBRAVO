@@ -240,7 +240,7 @@ const CATEGORY_IMAGES_MAP: Record<string, string> = {
 
 export default function TiendaClient({ initialProducts }: { initialProducts: Product[] }) {
     const [selectedCategory, setSelectedCategory] = useState<Category | 'Todos'>('Todos');
-    const [isCartOpen, setIsCartOpen] = useState(false);
+    // const [isCartOpen, setIsCartOpen] = useState(false); // Global now
     const { cartCount } = useStore();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -334,8 +334,6 @@ export default function TiendaClient({ initialProducts }: { initialProducts: Pro
                                                 product={product}
                                                 onAdd={() => {
                                                     // Ya no abrimos el carrito automáticamente
-                                                    // setIsCartOpen(true);
-                                                    // setTimeout(() => setIsCartOpen(false), 1500);
                                                 }}
                                             />
                                         ))}
@@ -346,9 +344,6 @@ export default function TiendaClient({ initialProducts }: { initialProducts: Pro
                     </>
                 )}
             </div>
-
-            {/* Carrito Lateral */}
-            <SideCart isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
 
             <Footer />
         </>

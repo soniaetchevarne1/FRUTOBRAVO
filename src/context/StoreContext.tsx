@@ -3,6 +3,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Product, CartItem } from '@/lib/types';
 
+import SideCart from '@/app/tienda/SideCart';
+
 interface StoreContextType {
     cart: CartItem[];
     addToCart: (product: Product, quantity: number) => void;
@@ -12,6 +14,10 @@ interface StoreContextType {
     cartTotal: number;
     isWholesale: boolean;
     toggleWholesale: () => void;
+    // Cart Visibility
+    isCartOpen: boolean;
+    openCart: () => void;
+    closeCart: () => void;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
@@ -19,6 +25,7 @@ const StoreContext = createContext<StoreContextType | undefined>(undefined);
 export function StoreProvider({ children }: { children: React.ReactNode }) {
     const [cart, setCart] = useState<CartItem[]>([]);
     const [isWholesale, setIsWholesale] = useState(false);
+    const [isCartOpen, setIsCartOpen] = useState(false);
 
     // Load cart from localStorage on mount
     useEffect(() => {
@@ -61,6 +68,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
     const toggleWholesale = () => setIsWholesale(!isWholesale);
 
+    const openCart = () => setIsCartOpen(true);
+    const closeCart = () => setIsCartOpen(false);
+
     const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
 
     const cartTotal = cart.reduce((acc, item) => {
@@ -79,9 +89,13 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
                 cartTotal,
                 isWholesale,
                 toggleWholesale,
+                isCartOpen,
+                openCart,
+                closeCart
             }}
         >
             {children}
+            <SideCart isOpen={isCartOpen} onClose={closeCart} />
         </StoreContext.Provider>
     );
 }
