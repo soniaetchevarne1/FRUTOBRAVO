@@ -93,8 +93,7 @@ export default function Home() {
           </div>
 
           {/* Slider Controls */}
-          <button onClick={prevSlide} className={styles.sliderBtnLeft}><ChevronLeft /></button>
-          <button onClick={nextSlide} className={styles.sliderBtnRight}><ChevronRight /></button>
+
         </section>
 
         {/* Featured Products */}
