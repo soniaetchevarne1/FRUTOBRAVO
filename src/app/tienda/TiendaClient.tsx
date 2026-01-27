@@ -333,8 +333,9 @@ export default function TiendaClient({ initialProducts }: { initialProducts: Pro
                                                 key={product.id}
                                                 product={product}
                                                 onAdd={() => {
-                                                    setIsCartOpen(true);
-                                                    setTimeout(() => setIsCartOpen(false), 1500);
+                                                    // Ya no abrimos el carrito automáticamente
+                                                    // setIsCartOpen(true);
+                                                    // setTimeout(() => setIsCartOpen(false), 1500);
                                                 }}
                                             />
                                         ))}
