@@ -3,19 +3,11 @@
 import { useStore } from "@/context/StoreContext";
 import { X, ShoppingBag, Trash2, Plus, Minus } from "lucide-react";
 import styles from "./page.module.css";
-
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-
 
 export default function SideCart({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
     const { cart, removeFromCart, updateQuantity, cartTotal, isWholesale } = useStore();
     const router = useRouter();
-
-    const handleCheckout = () => {
-        onClose();
-        router.push('/checkout');
-    };
 
     if (!isOpen) return null;
 
@@ -41,11 +33,11 @@ export default function SideCart({ isOpen, onClose }: { isOpen: boolean, onClose
                     padding: '1.25rem 1rem',
                     borderBottom: '1px solid #eee',
                     display: 'flex',
-                    justifyContent: 'space-between',
                     alignItems: 'center',
                     background: 'var(--primary)',
                     color: 'white',
-                    position: 'relative'
+                    position: 'relative',
+                    zIndex: 10
                 }}>
                     <button
                         onClick={onClose}
@@ -58,7 +50,9 @@ export default function SideCart({ isOpen, onClose }: { isOpen: boolean, onClose
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            marginRight: '1rem'
+                            marginRight: '1rem',
+                            border: 'none',
+                            cursor: 'pointer'
                         }}
                     >
                         <X size={18} />
@@ -69,11 +63,34 @@ export default function SideCart({ isOpen, onClose }: { isOpen: boolean, onClose
                             <ShoppingBag size={20} />
                         </div>
                         <div>
-                            <h2 style={{ margin: 0, fontSize: '1rem', fontWeight: 900, textTransform: 'uppercase' }}>Resumen de Compra</h2>
+                            <h2 style={{ margin: 0, fontSize: '1rem', fontWeight: 900, textTransform: 'uppercase' }}>Resumen</h2>
                             <p style={{ margin: 0, fontSize: '0.65rem', opacity: 0.9, fontWeight: 600 }}>Tus elegidos</p>
                         </div>
                     </div>
                 </div>
+
+                {/* Botón de Acción Rápida Arriba (Solo Móvil) */}
+                {cart.length > 0 && (
+                    <div style={{ padding: '1rem', borderBottom: '1px solid #f0f0f0', display: 'flex', gap: '0.5rem' }}>
+                        <a
+                            href="/checkout"
+                            style={{
+                                flex: 1,
+                                padding: '0.8rem',
+                                backgroundColor: '#D4AF37',
+                                color: 'white',
+                                borderRadius: '10px',
+                                fontWeight: 800,
+                                fontSize: '0.9rem',
+                                textAlign: 'center',
+                                textDecoration: 'none',
+                                boxShadow: '0 4px 10px rgba(212, 175, 55, 0.3)'
+                            }}
+                        >
+                            IR A CAJA 🚀
+                        </a>
+                    </div>
+                )}
 
                 {/* Cart Items */}
                 <div style={{ flex: 1, overflowY: 'auto', padding: '1rem 0.75rem' }}>
@@ -153,7 +170,9 @@ export default function SideCart({ isOpen, onClose }: { isOpen: boolean, onClose
                                             height: '24px',
                                             display: 'flex',
                                             alignItems: 'center',
-                                            justifyContent: 'center'
+                                            justifyContent: 'center',
+                                            border: 'none',
+                                            cursor: 'pointer'
                                         }}
                                     >
                                         <Trash2 size={12} />
@@ -167,12 +186,14 @@ export default function SideCart({ isOpen, onClose }: { isOpen: boolean, onClose
                 {/* Footer / Total */}
                 <div style={{
                     padding: '1.25rem 1rem',
-                    paddingBottom: 'calc(1.25rem + env(safe-area-inset-bottom))',
+                    paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom))',
                     borderTop: '1px solid #f0f0f0',
                     backgroundColor: '#fff',
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '1rem'
+                    gap: '1rem',
+                    boxShadow: '0 -4px 20px rgba(0,0,0,0.05)',
+                    zIndex: 10
                 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span style={{ fontWeight: 800, fontSize: '1rem', color: '#666' }}>TOTAL:</span>
@@ -181,36 +202,26 @@ export default function SideCart({ isOpen, onClose }: { isOpen: boolean, onClose
                         </span>
                     </div>
 
-
                     {cart.length > 0 && (
-                        <button
-                            onClick={() => {
-                                // Force close cart immediately
-                                onClose();
-                                // Use imperative navigation to ensure cart is cleared from UI
-                                // and to act as a "hard" navigation if needed
-                                window.location.href = '/checkout';
-                            }}
+                        <a
+                            href="/checkout"
                             style={{
                                 width: '100%',
-                                padding: '1rem',
+                                padding: '1.1rem',
                                 backgroundColor: '#D4AF37',
                                 color: 'white',
                                 borderRadius: '12px',
-                                border: 'none',
                                 fontWeight: 900,
-                                fontSize: '0.95rem',
-                                cursor: 'pointer',
-                                display: 'block',
+                                fontSize: '1rem',
                                 textAlign: 'center',
                                 textDecoration: 'none',
-                                marginTop: '1rem'
+                                boxShadow: '0 4px 15px rgba(212, 175, 55, 0.4)',
+                                border: 'none'
                             }}
                         >
-                            ENVIAR PEDIDO 🚀
-                        </button>
+                            FINALIZAR COMPRA 🚀
+                        </a>
                     )}
-
                 </div>
             </div>
         </>
