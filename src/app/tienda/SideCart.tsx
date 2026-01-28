@@ -181,8 +181,14 @@ export default function SideCart({ isOpen, onClose }: { isOpen: boolean, onClose
 
 
                     {cart.length > 0 && (
-                        <Link
-                            href="/checkout"
+                        <button
+                            onClick={() => {
+                                // Force close cart immediately
+                                onClose();
+                                // Use imperative navigation to ensure cart is cleared from UI
+                                // and to act as a "hard" navigation if needed
+                                window.location.href = '/checkout';
+                            }}
                             style={{
                                 width: '100%',
                                 padding: '1rem',
@@ -200,7 +206,7 @@ export default function SideCart({ isOpen, onClose }: { isOpen: boolean, onClose
                             }}
                         >
                             ENVIAR PEDIDO 🚀
-                        </Link>
+                        </button>
                     )}
 
                     {/* Mas dibujos alegres */}
