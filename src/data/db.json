@@ -10,7 +10,7 @@
       "priceWholesale": 11000,
       "unit": "kg",
       "stock": 45,
-      "image": "/products/castanas.png",
+      "image": "https://images.antigravity.ai/imagination/castanas_caju_dinamicas_fb_1769643149332",
       "isNew": true
     },
     {
@@ -23,7 +23,7 @@
       "priceWholesale": 8200,
       "unit": "kg",
       "stock": 2,
-      "image": "/placeholder/nueces.jpg"
+      "image": "https://images.antigravity.ai/imagination/nueces_mariposa_real_fb_1769643135254"
     },
     {
       "id": "22",
@@ -35,7 +35,7 @@
       "priceWholesale": 5800,
       "unit": "kg",
       "stock": 40,
-      "image": "/products/nueces.png"
+      "image": "https://images.antigravity.ai/imagination/nueces_mariposa_real_fb_1769643135254"
     },
     {
       "id": "1",
@@ -84,7 +84,7 @@
       "priceWholesale": 13500,
       "unit": "kg",
       "stock": 30,
-      "image": "/uploads/1769375784610-pistacho.jpg"
+      "image": "https://images.antigravity.ai/imagination/pistachos_vibrantes_fb_1769643163298"
     },
     {
       "id": "12",
