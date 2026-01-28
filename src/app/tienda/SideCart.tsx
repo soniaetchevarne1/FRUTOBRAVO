@@ -3,10 +3,19 @@
 import { useStore } from "@/context/StoreContext";
 import { X, ShoppingBag, Trash2, Plus, Minus } from "lucide-react";
 import styles from "./page.module.css";
+
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
 
 export default function SideCart({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
     const { cart, removeFromCart, updateQuantity, cartTotal, isWholesale } = useStore();
+    const router = useRouter();
+
+    const handleCheckout = () => {
+        onClose();
+        router.push('/checkout');
+    };
 
     if (!isOpen) return null;
 
@@ -171,9 +180,8 @@ export default function SideCart({ isOpen, onClose }: { isOpen: boolean, onClose
 
 
                     {cart.length > 0 && (
-                        <Link
-                            href="/checkout"
-                            onClick={onClose}
+                        <button
+                            onClick={handleCheckout}
                             style={{
                                 width: '100%',
                                 padding: '1rem',
@@ -190,7 +198,7 @@ export default function SideCart({ isOpen, onClose }: { isOpen: boolean, onClose
                             }}
                         >
                             ENVIAR PEDIDO 🚀
-                        </Link>
+                        </button>
                     )}
 
                     {/* Mas dibujos alegres */}
