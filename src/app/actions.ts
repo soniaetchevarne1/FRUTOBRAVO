@@ -54,8 +54,16 @@ export async function uploadImageAction(formData: FormData) {
 // --- ORDER ACTIONS ---
 
 export async function createOrderAction(order: Order) {
-    await saveOrder(order);
-    revalidatePath('/admin/ventas');
+    try {
+        console.log('Creating order:', order.id);
+        await saveOrder(order);
+        revalidatePath('/admin/ventas');
+        console.log('Order created successfully:', order.id);
+        return { success: true, orderId: order.id };
+    } catch (error) {
+        console.error('Error creating order:', error);
+        throw new Error('No se pudo crear el pedido. Por favor, contáctanos por WhatsApp.');
+    }
 }
 
 export async function updateOrderStatusAction(id: string, status: OrderStatus) {

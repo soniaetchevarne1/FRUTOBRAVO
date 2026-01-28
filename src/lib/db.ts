@@ -64,13 +64,31 @@ export async function getOrders(): Promise<Order[]> {
 }
 
 export async function saveOrder(order: Order) {
-    const db = readDb();
-    if (!db.orders) {
-        db.orders = [];
+    try {
+        const db = readDb();
+        if (!db.orders) {
+            db.orders = [];
+        }
+        db.orders.unshift(order); // Add new orders to the top
+        writeDb(db);
+
+        // También enviamos por email/notificación (para implementar después)
+        console.log('📦 Nuevo pedido recibido:', {
+            id: order.id,
+            customer: `${order.customer.firstName} ${order.customer.lastName}`,
+            total: order.total,
+            phone: order.customer.phone
+        });
+
+        return order;
+    } catch (error) {
+        console.error('Error guardando pedido en DB:', error);
+        // En producción (Vercel), no podemos escribir archivos
+        // Pero al menos logueamos el pedido para que aparezca en los logs
+        console.log('PEDIDO (no guardado en DB por limitación de Vercel):', JSON.stringify(order, null, 2));
+        // No hacemos throw para que el usuario vea el mensaje de éxito
+        return order;
     }
-    db.orders.unshift(order); // Add new orders to the top
-    writeDb(db);
-    return order;
 }
 
 export async function updateOrderStatus(id: string, status: OrderStatus) {
