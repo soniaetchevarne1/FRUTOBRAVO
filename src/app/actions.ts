@@ -60,6 +60,7 @@ export async function createOrderAction(order: Order) {
         console.log('Creating order:', order.id);
         await saveOrder(order);
         revalidatePath('/admin/ventas');
+        revalidatePath('/admin/clientes');
         console.log('Order created successfully:', order.id);
         return { success: true, orderId: order.id };
     } catch (error) {

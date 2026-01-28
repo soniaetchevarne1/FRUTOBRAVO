@@ -206,3 +206,37 @@ export async function updateOrderStatus(id: string, status: OrderStatus) {
         throw error;
     }
 }
+
+// --- CLIENTES ---
+
+export async function getCustomers() {
+    const orders = await getOrders();
+    const customersMap = new Map();
+
+    orders.forEach(order => {
+        const email = order.customer.email.toLowerCase().trim();
+        const existing = customersMap.get(email);
+
+        if (existing) {
+            existing.totalSpent += order.total;
+            existing.orderCount += 1;
+            // Keep the most recent info
+            if (new Date(order.date) > new Date(existing.lastOrderDate)) {
+                existing.lastOrderDate = order.date;
+                existing.phone = order.customer.phone;
+                existing.name = `${order.customer.firstName} ${order.customer.lastName}`;
+            }
+        } else {
+            customersMap.set(email, {
+                email,
+                name: `${order.customer.firstName} ${order.customer.lastName}`,
+                phone: order.customer.phone,
+                totalSpent: order.total,
+                orderCount: 1,
+                lastOrderDate: order.date
+            });
+        }
+    });
+
+    return Array.from(customersMap.values()).sort((a, b) => b.totalSpent - a.totalSpent);
+}
