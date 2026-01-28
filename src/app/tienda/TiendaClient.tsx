@@ -68,8 +68,8 @@ function ProductCard({ product, onAdd }: { product: Product, onAdd: () => void }
                     gap: '0.5rem',
                     border: '2px solid var(--primary)'
                 }}>
-                    <span style={{ fontSize: '1.2rem' }}>🌰</span>
-                    <span style={{ fontWeight: 700, fontSize: '0.8rem', color: 'var(--primary)' }}>¡AGREGADO!</span>
+                    <span style={{ fontSize: '1.2rem' }}>✨</span>
+                    <span style={{ fontWeight: 800, fontSize: '0.85rem', color: 'var(--primary)', letterSpacing: '0.5px' }}>¡AL CARRITO! 🛒</span>
                 </div>
             )}
 
@@ -167,39 +167,28 @@ function ProductCard({ product, onAdd }: { product: Product, onAdd: () => void }
                 </div>
 
                 {/* Info de precio y cantidad */}
-                <div className={styles.priceQtyContainer} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                    <div className={styles.productPrice} style={{
-                        margin: '0',
-                        fontSize: '1.2rem',
-                        color: isOutOfStock ? '#888' : 'var(--primary)',
-                        textDecoration: isOutOfStock ? 'line-through' : 'none'
-                    }}>
-                        ${new Intl.NumberFormat('es-AR').format(totalPrice)}
+                <div className={styles.priceQtyWrapper}>
+                    <div className={styles.productPriceBadge}>
+                        <span className={styles.priceSymbol}>$</span>
+                        {new Intl.NumberFormat('es-AR').format(totalPrice)}
                     </div>
 
                     {/* Quantity Selector */}
-                    <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        background: isOutOfStock ? '#eee' : '#f5f5f5',
-                        padding: '4px 8px',
-                        borderRadius: '10px'
-                    }}>
+                    <div className={styles.qtyContainer}>
                         <button
                             disabled={isOutOfStock}
                             onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                            style={{ background: 'none', border: 'none', padding: '2px', color: isOutOfStock ? '#aaa' : 'var(--primary)', display: 'flex', alignItems: 'center', cursor: isOutOfStock ? 'not-allowed' : 'pointer' }}
+                            className={styles.qtyBtn}
                         >
-                            <Minus size={16} strokeWidth={3} />
+                            <Minus size={14} strokeWidth={4} />
                         </button>
-                        <span style={{ fontWeight: 800, fontSize: '0.9rem', minWidth: '15px', textAlign: 'center', color: isOutOfStock ? '#aaa' : 'inherit' }}>{quantity}</span>
+                        <span className={styles.qtyValue}>{quantity}</span>
                         <button
                             disabled={isOutOfStock}
                             onClick={() => setQuantity(quantity + 1)}
-                            style={{ background: 'none', border: 'none', padding: '2px', color: isOutOfStock ? '#aaa' : 'var(--primary)', display: 'flex', alignItems: 'center', cursor: isOutOfStock ? 'not-allowed' : 'pointer' }}
+                            className={styles.qtyBtn}
                         >
-                            <Plus size={16} strokeWidth={3} />
+                            <Plus size={14} strokeWidth={4} />
                         </button>
                     </div>
                 </div>
@@ -208,16 +197,8 @@ function ProductCard({ product, onAdd }: { product: Product, onAdd: () => void }
                     disabled={isOutOfStock}
                     className={styles.addToCartBtn}
                     onClick={handleAddToCart}
-                    style={{
-                        width: '100%',
-                        padding: '0.75rem',
-                        fontSize: '0.9rem',
-                        fontWeight: 700,
-                        backgroundColor: isOutOfStock ? '#ccc' : 'var(--primary)',
-                        cursor: isOutOfStock ? 'not-allowed' : 'pointer'
-                    }}
                 >
-                    {isOutOfStock ? 'AGOTADO 😿' : 'AGREGAR AL CARRITO'}
+                    {isOutOfStock ? 'AGOTADO 😿' : '¡LO QUIERO! 😋'}
                 </button>
             </div>
         </div>

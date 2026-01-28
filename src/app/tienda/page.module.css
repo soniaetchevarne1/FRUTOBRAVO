@@ -80,20 +80,22 @@
 
 .productCard {
     background: white;
-    border-radius: var(--radius);
+    border-radius: 20px;
+    /* Mas redondeado */
     overflow: hidden;
-    box-shadow: var(--shadow-sm);
-    transition: var(--transition);
-    border: 1px solid #eee;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid #f0f0f0;
     display: flex;
     flex-direction: column;
     height: 100%;
-    /* Ensure all cards have same height */
 }
 
 .productCard:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-md);
+    transform: translateY(-8px) scale(1.02) rotate(1deg);
+    /* Efecto divertido */
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary);
 }
 
 .imageContainer {
@@ -112,30 +114,28 @@
     display: flex;
     flex-direction: column;
     flex: 1;
-    /* Grow to fill card height */
 }
 
 .productCategory {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: var(--primary);
     text-transform: uppercase;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    letter-spacing: 0.05em;
+    font-weight: 800;
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.1em;
 }
 
 .productName {
-    font-size: 1.1rem;
-    font-weight: 700;
+    font-size: 1.15rem;
+    font-weight: 800;
     color: var(--text-main);
-    margin-bottom: 0.5rem;
-    line-height: 1.3;
+    margin-bottom: 0.6rem;
+    line-height: 1.2;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
     height: 2.8rem;
-    /* Consistent height for titles */
 }
 
 .productDescription {
@@ -147,46 +147,97 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
     height: 2.5rem;
-    /* Consistent height for descriptions */
 }
 
 .weightSelector {
     display: flex;
-    gap: 4px;
-    margin-bottom: 1rem;
+    gap: 6px;
+    margin-bottom: 1.25rem;
 }
 
-.priceQtyContainer {
+/* NEW: Estilos para destacar Precio y Cantidad */
+.priceQtyWrapper {
     margin-top: auto;
-    /* Push to bottom */
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
+    background: #fdf6f2;
+    /* Fondo sutil naranja */
+    padding: 10px;
+    border-radius: 12px;
 }
 
-.productPrice {
-    font-size: 1.25rem;
-    font-weight: 800;
+.productPriceBadge {
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: black;
+    display: flex;
+    align-items: baseline;
+}
+
+.priceSymbol {
+    font-size: 0.9rem;
+    margin-right: 2px;
     color: var(--primary);
+}
+
+.qtyContainer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    padding: 4px;
+    border-radius: 8px;
+}
+
+.qtyBtn {
+    background: black !important;
+    color: white !important;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.qtyBtn:hover:not(:disabled) {
+    transform: rotate(10deg);
+    background: var(--primary) !important;
+}
+
+.qtyValue {
+    font-weight: 800;
+    font-size: 1rem;
+    min-width: 20px;
+    text-align: center;
 }
 
 .addToCartBtn {
     width: 100%;
-    padding: 0.75rem;
+    padding: 0.9rem;
     background: var(--primary);
     color: white;
-    font-weight: 700;
-    border-radius: 12px;
-    transition: all 0.2s;
+    font-weight: 900;
+    border-radius: 14px;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     text-transform: uppercase;
     letter-spacing: 1px;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
+    box-shadow: 0 5px 0px #c44d14;
+    /* Profundidad */
 }
 
 .addToCartBtn:hover:not(:disabled) {
-    background: var(--primary-hover);
-    transform: scale(1.02);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 0px #c44d14;
+}
+
+.addToCartBtn:active:not(:disabled) {
+    transform: translateY(2px);
+    box-shadow: 0 0px 0px #c44d14;
 }
 
 @media (max-width: 900px) {
@@ -211,34 +262,37 @@
         font-size: 0.9rem;
         margin-bottom: 0.25rem;
         height: 2.4rem;
-        /* Adjusted for mobile */
     }
 
-    .productPrice {
-        font-size: 1.05rem;
-        margin-bottom: 0.5rem;
+    .priceQtyWrapper {
+        flex-direction: column;
+        gap: 8px;
+        align-items: center;
+        padding: 5px;
+    }
+
+    .productPriceBadge {
+        font-size: 1.2rem;
+    }
+
+    .qtyContainer {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .qtyBtn {
+        width: 24px;
+        height: 24px;
     }
 
     .productInfo {
         padding: 0.6rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
-
-    .productDescription {
-        display: none !important;
-        /* Hide description on mobile to save space */
     }
 
     .addToCartBtn {
-        padding: 0.5rem;
+        padding: 0.6rem;
         font-size: 0.8rem;
-        margin-top: auto;
-    }
-
-    .weightSelector {
-        margin-bottom: 0.5rem !important;
+        border-radius: 10px;
     }
 }
 
