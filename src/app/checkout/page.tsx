@@ -399,37 +399,32 @@ export default function CheckoutPage() {
                     </div>
                 </div>
 
-            </div>
-
-            {/* BOTÓN FIJO ABAJO */}
-            <div style={{
-                position: 'fixed',
-                bottom: 0,
-                left: 0,
-                right: 0,
-                background: 'white',
-                padding: '1rem',
-                boxShadow: '0 -10px 30px rgba(0,0,0,0.15)',
-                zIndex: 1000
-            }}>
-                <button
-                    onClick={enviarPedido}
-                    disabled={enviando}
-                    style={{
-                        width: '100%',
-                        padding: '1.2rem',
-                        background: enviando ? '#ccc' : '#D4AF37',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '15px',
-                        fontSize: '1.2rem',
-                        fontWeight: 900,
-                        cursor: enviando ? 'not-allowed' : 'pointer',
-                        boxShadow: '0 5px 20px rgba(212, 175, 55, 0.4)'
-                    }}
-                >
-                    {enviando ? 'ENVIANDO...' : 'CONFIRMAR PEDIDO 🚀'}
-                </button>
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    marginTop: '2rem'
+                }}>
+                    <button
+                        onClick={enviarPedido}
+                        disabled={enviando}
+                        style={{
+                            width: '80%',
+                            maxWidth: '300px',
+                            padding: '1rem',
+                            background: enviando ? '#ccc' : '#D4AF37',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '12px',
+                            fontSize: '1.1rem',
+                            fontWeight: 900,
+                            cursor: enviando ? 'not-allowed' : 'pointer',
+                            boxShadow: '0 4px 15px rgba(212, 175, 55, 0.3)'
+                        }}
+                    >
+                        {enviando ? 'ENVIANDO...' : 'FINALIZAR PEDIDO 🚀'}
+                    </button>
+                </div>
             </div>
 
             <Footer />
