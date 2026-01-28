@@ -47,15 +47,6 @@ export default function SideCart({ isOpen, onClose }: { isOpen: boolean, onClose
                     color: 'white',
                     position: 'relative'
                 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <div style={{ background: 'white', color: 'var(--primary)', padding: '0.4rem', borderRadius: '10px', display: 'flex' }}>
-                            <ShoppingBag size={20} />
-                        </div>
-                        <div>
-                            <h2 style={{ margin: 0, fontSize: '1rem', fontWeight: 900, textTransform: 'uppercase' }}>Resumen de Compra</h2>
-                            <p style={{ margin: 0, fontSize: '0.65rem', opacity: 0.9, fontWeight: 600 }}>Tus elegidos</p>
-                        </div>
-                    </div>
                     <button
                         onClick={onClose}
                         style={{
@@ -66,11 +57,22 @@ export default function SideCart({ isOpen, onClose }: { isOpen: boolean, onClose
                             height: '32px',
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'center'
+                            justifyContent: 'center',
+                            marginRight: '1rem'
                         }}
                     >
                         <X size={18} />
                     </button>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1 }}>
+                        <div style={{ background: 'white', color: 'var(--primary)', padding: '0.4rem', borderRadius: '10px', display: 'flex' }}>
+                            <ShoppingBag size={20} />
+                        </div>
+                        <div>
+                            <h2 style={{ margin: 0, fontSize: '1rem', fontWeight: 900, textTransform: 'uppercase' }}>Resumen de Compra</h2>
+                            <p style={{ margin: 0, fontSize: '0.65rem', opacity: 0.9, fontWeight: 600 }}>Tus elegidos</p>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Cart Items */}
@@ -209,10 +211,6 @@ export default function SideCart({ isOpen, onClose }: { isOpen: boolean, onClose
                         </button>
                     )}
 
-                    {/* Mas dibujos alegres */}
-                    <div style={{ textAlign: 'center', fontSize: '1.5rem', letterSpacing: '8px', filter: 'grayscale(0.3)' }}>
-                        🌰😊🥜✨🥜😊🌰
-                    </div>
                 </div>
             </div>
         </>
