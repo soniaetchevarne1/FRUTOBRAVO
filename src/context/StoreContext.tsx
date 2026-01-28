@@ -115,7 +115,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
             }}
         >
             {children}
-            {pathname !== '/checkout' && <SideCart isOpen={isCartOpen} onClose={closeCart} />}
+            <SideCart isOpen={isCartOpen} onClose={closeCart} />
         </StoreContext.Provider>
     );
 }
