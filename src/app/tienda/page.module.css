@@ -156,15 +156,91 @@
         margin-bottom: 2rem;
     }
 
-    .productsGrid {
+    .productsGrid.gridMode {
         grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
     }
 }
 
 @media (max-width: 600px) {
-    .productsGrid {
-        grid-template-columns: 1fr;
+    .productsGrid.gridMode {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
     }
+
+    .productsGrid.listMode {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
+
+/* List Mode Specifics */
+.listMode .productCard {
+    flex-direction: row;
+    height: 160px;
+    align-items: center;
+}
+
+.listMode .imageContainer {
+    width: 120px;
+    height: 100%;
+    flex-shrink: 0;
+}
+
+.listMode .productInfo {
+    padding: 0.75rem;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.listMode .productName {
+    font-size: 0.9rem;
+    line-clamp: 1;
+    -webkit-line-clamp: 1;
+    margin-bottom: 2px;
+}
+
+.listMode .productDescription {
+    display: none !important;
+}
+
+.listMode .weightSelector {
+    display: flex !important;
+    gap: 2px !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.listMode .weightSelector button {
+    padding: 4px 2px !important;
+    font-size: 0.7rem !important;
+}
+
+@media (max-width: 480px) {
+    .listMode .productCard {
+        height: 145px;
+    }
+
+    .listMode .imageContainer {
+        width: 100px;
+    }
+}
+
+.listMode .priceQtyContainer {
+    margin-bottom: 0.5rem !important;
+}
+
+.listMode .addToCartBtn {
+    padding: 0.5rem !important;
+    font-size: 0.8rem !important;
+}
+
+.listMode .productCategory {
+    margin-bottom: 0.25rem !important;
+    font-size: 0.65rem !important;
+}
+
+.listMode .productPrice {
+    font-size: 1rem !important;
 }
 
 /* Category Visual List */
@@ -286,6 +362,54 @@
     color: var(--text-main);
     padding: 0 0.5rem;
     line-height: 1.2;
+}
+
+/* View Toggle */
+.viewToggle {
+    display: none;
+    background: #f0f0f0;
+    padding: 4px;
+    border-radius: 12px;
+    margin-left: auto;
+}
+
+@media (max-width: 768px) {
+    .viewToggle {
+        display: flex;
+        gap: 4px;
+        width: 100%;
+        margin-top: 1rem;
+        justify-content: center;
+    }
+
+    .toggleText {
+        display: none;
+    }
+}
+
+.toggleBtn {
+    background: transparent;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #666;
+    transition: all 0.2s;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.toggleBtn.active {
+    background: white;
+    color: var(--primary);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.toggleText {
+    display: inline;
 }
 
 /* Side Cart Container */

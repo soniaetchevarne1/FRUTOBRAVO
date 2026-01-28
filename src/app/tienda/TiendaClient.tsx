@@ -6,7 +6,7 @@ import Footer from '@/components/Footer';
 import { Category, Product } from '@/lib/types';
 import { useStore } from '@/context/StoreContext';
 import styles from './page.module.css';
-import { Filter, Minus, Plus, ShoppingCart, SearchX } from 'lucide-react';
+import { Filter, Minus, Plus, ShoppingCart, SearchX, LayoutGrid, List } from 'lucide-react';
 import SideCart from './SideCart';
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -128,7 +128,7 @@ function ProductCard({ product, onAdd }: { product: Product, onAdd: () => void }
                 <div className={styles.productCategory}>{product.category}</div>
                 <h3 className={styles.productName}>{product.name}</h3>
 
-                <p style={{
+                <p className={styles.productDescription} style={{
                     fontSize: '0.85rem',
                     color: 'var(--text-secondary)',
                     marginBottom: '1rem',
@@ -142,7 +142,7 @@ function ProductCard({ product, onAdd }: { product: Product, onAdd: () => void }
                 </p>
 
                 {/* Weights Selector */}
-                <div style={{ display: 'flex', gap: '4px', marginBottom: '1rem' }}>
+                <div className={styles.weightSelector} style={{ display: 'flex', gap: '4px', marginBottom: '1rem' }}>
                     {WEIGHT_OPTIONS.map((opt) => (
                         <button
                             key={opt.value}
@@ -167,7 +167,7 @@ function ProductCard({ product, onAdd }: { product: Product, onAdd: () => void }
                 </div>
 
                 {/* Info de precio y cantidad */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                <div className={styles.priceQtyContainer} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                     <div className={styles.productPrice} style={{
                         margin: '0',
                         fontSize: '1.2rem',
@@ -240,6 +240,23 @@ const CATEGORY_IMAGES_MAP: Record<string, string> = {
 
 export default function TiendaClient({ initialProducts }: { initialProducts: Product[] }) {
     const [selectedCategory, setSelectedCategory] = useState<Category | 'Todos'>('Todos');
+    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+
+    // Persistence
+    useState(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('productViewMode');
+            if (saved === 'grid' || saved === 'list') {
+                setViewMode(saved);
+            }
+        }
+    });
+
+    const handleViewModeChange = (mode: 'grid' | 'list') => {
+        setViewMode(mode);
+        localStorage.setItem('productViewMode', mode);
+    };
+
     // const [isCartOpen, setIsCartOpen] = useState(false); // Global now
     const { cartCount } = useStore();
     const router = useRouter();
@@ -268,6 +285,16 @@ export default function TiendaClient({ initialProducts }: { initialProducts: Pro
                     // VISTA INICIAL: GRID DE CATEGORÍAS
                     <div className={styles.shopContainer}>
                         <div style={{ flex: 1 }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                                <h2 className="h2" style={{ margin: 0 }}>Categorías</h2>
+                                <button
+                                    onClick={() => setSelectedCategory('Frutos Secos')} // Por defecto a una categoría o añadir un "Ver todo" logic
+                                    className="btn btn-secondary"
+                                    style={{ fontSize: '0.85rem' }}
+                                >
+                                    Ver todos los productos
+                                </button>
+                            </div>
                             <div className={styles.categoriesMainGrid}>
                                 {CATEGORIES.map((cat) => (
                                     <div
@@ -292,7 +319,7 @@ export default function TiendaClient({ initialProducts }: { initialProducts: Pro
                 ) : (
                     // VISTA DE PRODUCTOS POR CATEGORÍA
                     <>
-                        <div style={{ marginBottom: '1.5rem' }}>
+                        <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
                             <button
                                 onClick={() => {
                                     setSelectedCategory('Todos');
@@ -303,6 +330,26 @@ export default function TiendaClient({ initialProducts }: { initialProducts: Pro
                             >
                                 ← Volver a Categorías
                             </button>
+
+                            {/* View Toggle - Visible en todos los dispositivos */}
+                            <div className={styles.viewToggle} style={{ display: 'flex' }}>
+                                <button
+                                    className={`${styles.toggleBtn} ${viewMode === 'grid' ? styles.active : ''}`}
+                                    onClick={() => handleViewModeChange('grid')}
+                                    title="Vista Cuadrícula"
+                                >
+                                    <LayoutGrid size={20} />
+                                    <span className={styles.toggleText}>Cuadrícula</span>
+                                </button>
+                                <button
+                                    className={`${styles.toggleBtn} ${viewMode === 'list' ? styles.active : ''}`}
+                                    onClick={() => handleViewModeChange('list')}
+                                    title="Vista Lista"
+                                >
+                                    <List size={20} />
+                                    <span className={styles.toggleText}>Lista</span>
+                                </button>
+                            </div>
                         </div>
 
                         <div className={styles.shopContainer}>
@@ -327,7 +374,7 @@ export default function TiendaClient({ initialProducts }: { initialProducts: Pro
                                         </button>
                                     </div>
                                 ) : (
-                                    <div className={styles.productsGrid}>
+                                    <div className={`${styles.productsGrid} ${viewMode === 'grid' ? styles.gridMode : styles.listMode}`}>
                                         {filteredProducts.map((product) => (
                                             <ProductCard
                                                 key={product.id}

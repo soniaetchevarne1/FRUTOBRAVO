@@ -142,7 +142,7 @@ export default function VentasClient({ initialOrders }: { initialOrders: Order[]
                                                         {['Pendiente', 'Pagado', 'Enviado', 'Entregado'].map((status) => (
                                                             <button
                                                                 key={status}
-                                                                onClick={() => handleStatusChange(order.id, status as any)}
+                                                                onClick={() => handleStatusChange(order.id, status as Order['status'])}
                                                                 style={{
                                                                     padding: '0.25rem 0.75rem',
                                                                     borderRadius: '6px',

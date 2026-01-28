@@ -34,6 +34,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
     // Close cart on route change
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setIsCartOpen(false);
     }, [pathname]);
 
@@ -43,6 +44,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
             const savedCart = localStorage.getItem('sonia_cart');
             if (savedCart) {
                 try {
+                    // eslint-disable-next-line react-hooks/set-state-in-effect
                     setCart(JSON.parse(savedCart));
                 } catch (e) {
                     console.error('Error parsing cart', e);
