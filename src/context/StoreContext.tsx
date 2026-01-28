@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { Product, CartItem } from '@/lib/types';
 
 import SideCart from '@/app/tienda/SideCart';
@@ -21,12 +22,20 @@ interface StoreContextType {
     closeCart: () => void;
 }
 
+
+
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
     const [cart, setCart] = useState<CartItem[]>([]);
     const [isWholesale, setIsWholesale] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
+    const pathname = usePathname();
+
+    // Close cart on route change
+    useEffect(() => {
+        setIsCartOpen(false);
+    }, [pathname]);
 
     // Load cart from localStorage on mount
     useEffect(() => {
