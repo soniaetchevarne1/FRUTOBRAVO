@@ -269,37 +269,82 @@ export const products: Product[] = [
 export const orders: Order[] = [
     {
         id: 'ORD-001',
-        customerName: 'Juan Pérez',
+        customer: {
+            firstName: 'Juan',
+            lastName: 'Pérez',
+            email: 'juan@example.com',
+            phone: '11-1234-5678',
+            dni: '',
+            address: 'Av. Rivadavia 1234',
+            city: 'CABA',
+            province: 'Buenos Aires',
+            zip: '1406'
+        },
+        deliveryMethod: 'envio',
+        paymentMethod: 'transferencia',
         date: '2026-01-20',
         items: [
             { productId: '1', productName: 'Almendras Nonpareil', quantity: 2, price: 12000 },
             { productId: '5', productName: 'Pimentón Ahumado Premium', quantity: 1, price: 3500 }
         ],
+        subtotal: 27500,
+        shippingCost: 0,
+        discount: 0,
         total: 27500,
         status: 'Entregado',
         type: 'Minorista'
     },
     {
         id: 'ORD-002',
-        customerName: 'Dietética "Vida Sana"',
+        customer: {
+            firstName: 'Dietética Vida Sana',
+            lastName: '',
+            email: 'vidasana@example.com',
+            phone: '11-9876-5432',
+            dni: '',
+            address: 'Calle Comercio 567',
+            city: 'CABA',
+            province: 'Buenos Aires',
+            zip: '1425'
+        },
+        deliveryMethod: 'retiro',
+        paymentMethod: 'transferencia',
         date: '2026-01-22',
         items: [
             { productId: '1', productName: 'Almendras Nonpareil', quantity: 10, price: 9500 },
             { productId: '7', productName: 'Harina de Almendras', quantity: 5, price: 10800 },
             { productId: '4', productName: 'Castañas de Cajú W4', quantity: 5, price: 11000 }
         ],
+        subtotal: 204000,
+        shippingCost: 0,
+        discount: 0,
         total: 204000,
         status: 'Pendiente',
         type: 'Mayorista'
     },
     {
         id: 'ORD-003',
-        customerName: 'Maria González',
+        customer: {
+            firstName: 'Maria',
+            lastName: 'González',
+            email: 'maria@example.com',
+            phone: '11-5555-4444',
+            dni: '',
+            address: 'Av. Corrientes 890',
+            city: 'CABA',
+            province: 'Buenos Aires',
+            zip: '1043'
+        },
+        deliveryMethod: 'envio',
+        paymentMethod: 'efectivo',
         date: '2026-01-23',
         items: [
             { productId: '10', productName: 'Mix Energético', quantity: 1, price: 5500 }
         ],
-        total: 5500,
+        subtotal: 5500,
+        shippingCost: 3500,
+        discount: 550,
+        total: 8450,
         status: 'Pagado',
         type: 'Minorista'
     }
