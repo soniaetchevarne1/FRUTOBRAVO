@@ -17,8 +17,8 @@ export default function CheckoutPage() {
     const [direccion, setDireccion] = useState('');
     const [ciudad, setCiudad] = useState('');
     const [cp, setCp] = useState('');
-    const [envio, setEnvio] = useState('envio');
-    const [pago, setPago] = useState('transferencia');
+    const [envio, setEnvio] = useState<'envio' | 'retiro'>('envio');
+    const [pago, setPago] = useState<'transferencia' | 'efectivo' | 'tarjeta'>('transferencia');
     const [enviando, setEnviando] = useState(false);
 
     const costoEnvio = envio === 'envio' ? (cartTotal > 50000 ? 0 : 3500) : 0;
