@@ -635,25 +635,25 @@
 
 @media (max-width: 768px) {
   .favoritesGrid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.5rem;
-    /* Muy poco espacio entre ellos */
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.25rem;
+    padding: 0 0.25rem;
   }
 
   .favImgContainer {
-    height: 120px;
-    /* Imagen mucho más chica */
+    height: 80px;
   }
 
   .favInfoContainer {
-    padding: 0.75rem 0.5rem;
+    padding: 0.4rem 0.2rem;
   }
 
   .favTitle {
-    font-size: 0.9rem;
-    /* Titulo más chico */
-    margin-bottom: 0.25rem;
-    line-height: 1.1;
+    font-size: 0.65rem;
+    margin-bottom: 0.15rem;
+    line-height: 1;
+    height: 1.3rem;
+    overflow: hidden;
   }
 
   .favDesc {
@@ -662,6 +662,13 @@
   }
 
   .favPrice {
-    font-size: 1rem;
+    font-size: 0.65rem;
+  }
+
+  .productBadge {
+    font-size: 0.5rem;
+    padding: 0.2rem 0.4rem;
+    top: 5px;
+    right: 5px;
   }
 }
