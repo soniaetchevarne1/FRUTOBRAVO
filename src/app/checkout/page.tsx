@@ -38,13 +38,15 @@ export default function CheckoutPage() {
         setEnviando(true);
 
         try {
-            console.log('Procesando pedido v2.2...');
+            console.log('Procesando pedido v2.5...');
+            const pedidoId = 'PED-' + Date.now();
+
             const pedido = {
-                id: 'PED-' + Date.now(),
+                id: pedidoId,
                 customer: {
                     firstName: nombre,
                     lastName: '',
-                    email: email,
+                    email: email.trim().toLowerCase(),
                     phone: telefono,
                     dni: '',
                     address: direccion,
@@ -58,7 +60,7 @@ export default function CheckoutPage() {
                     productId: item.id,
                     productName: item.name,
                     quantity: item.quantity,
-                    price: isWholesale ? item.priceWholesale : item.priceRetail,
+                    price: isWholesale ? (item.priceWholesale || 0) : (item.priceRetail || 0),
                 })),
                 subtotal: cartTotal,
                 shippingCost: costoEnvio,
@@ -68,40 +70,55 @@ export default function CheckoutPage() {
                 type: isWholesale ? 'Mayorista' as const : 'Minorista' as const,
             };
 
-            // 1. Formatear mensaje para WhatsApp
-            const itemsList = cart.map(item => `- ${item.name} x${item.quantity}`).join('%0A');
-            const message = `¡Hola! Acabo de realizar un pedido en SONIA APP 🚀%0A%0A` +
-                `*Pedido:* ${pedido.id}%0A` +
-                `*Cliente:* ${nombre}%0A` +
-                `*Teléfono:* ${telefono}%0A` +
-                `*Entrega:* ${envio === 'envio' ? 'Envío a domicilio' : 'Retiro en local'}%0A` +
-                `*Pago:* ${pago}%0A%0A` +
-                `*Detalle:*%0A${itemsList}%0A%0A` +
-                `*TOTAL: $${new Intl.NumberFormat('es-AR').format(total)}*`;
-
-            const whatsappNumber = "5493416091224";
-            const waUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
-
-            // 2. ABRIR WHATSAPP PRIMERO PARA ASEGURAR LA VENTA
-            window.open(waUrl, '_blank');
-
-            // 3. Avisar al usuario
-            alert('¡ABRIENDO WHATSAPP! 🚀\n\nPor favor envía el mensaje. Tu pedido ya está en camino.');
-
-            // 4. Intentar guardar en segundo plano (si falla no importa)
+            // 1. Intentar guardar en base de datos PRIMERO con un timeout o manejo robusto
+            // Await the action to ensure it's processed before we leave the page
+            console.log('Guardando pedido en base de datos...');
             try {
-                await createOrderAction(pedido);
-            } catch (serverError) {
-                console.warn('Error silencioso de base de datos:', serverError);
+                const res = await createOrderAction(pedido);
+                if (res && !res.success) {
+                    console.warn('Advertencia al guardar orden:', res.error);
+                }
+            } catch (serverError: any) {
+                console.error('Error contactando al servidor (no fatal para el cliente):', serverError);
+                // No detenemos el flujo hacia WhatsApp si falla la DB, 
+                // pero lo registramos.
             }
 
-            // 5. Limpiar carrito pero NO redireccionar para no interrumpir
+            // 2. Formatear mensaje para WhatsApp con encoding seguro
+            const currencyFormatter = new Intl.NumberFormat('es-AR', {
+                style: 'currency',
+                currency: 'ARS',
+                minimumFractionDigits: 0
+            });
+
+            const itemsText = cart.map(item => `- ${item.name} x${item.quantity}`).join('\n');
+            const rawMessage = `¡Hola! Acabo de realizar un pedido en SONIA APP 🚀\n\n` +
+                `*Pedido:* ${pedidoId}\n` +
+                `*Cliente:* ${nombre}\n` +
+                `*Teléfono:* ${telefono}\n` +
+                `*Entrega:* ${envio === 'envio' ? 'Envío a domicilio' : 'Retiro en local'}\n` +
+                `*Pago:* ${pago}\n\n` +
+                `*Detalle:*\n${itemsText}\n\n` +
+                `*TOTAL: ${currencyFormatter.format(total)}*`;
+
+            const whatsappNumber = "5493416091224";
+            const waUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(rawMessage)}`;
+
+            // 3. Limpiar carrito localmente antes de irse
             clearCart();
-            setEnviando(false);
+
+            // 4. REDIRIGIR A WHATSAPP
+            // Usamos location.href porque es más confiable en móviles que window.open
+            console.log('Redirigiendo a WhatsApp...');
+
+            // Avisar al usuario brevemente si estamos en mobile o como fallback
+            alert('¡Pedido Procesado! 🚀\n\nAhora te redirigiremos a WhatsApp para finalizar el envío.');
+
+            window.location.href = waUrl;
 
         } catch (error: any) {
-            console.error('Error en flujo v2.2:', error);
-            alert('❌ ERROR AL PREPARAR EL PEDIDO:\n' + (error.message || 'Intente nuevamente'));
+            console.error('Error crítico en flujo v2.5:', error);
+            alert('❌ ERROR AL PROCESAR EL PEDIDO:\n' + (error.message || 'Error técnico desconocido. Por favor intenta nuevamente o contactanos por WhatsApp directamente.'));
         } finally {
             setEnviando(false);
         }
@@ -452,7 +469,7 @@ export default function CheckoutPage() {
                             marginTop: '1rem'
                         }}
                     >
-                        {enviando ? 'PROCESANDO...' : 'ENVIAR PEDIDO 🚀 (v2.0)'}
+                        {enviando ? 'PROCESANDO...' : 'ENVIAR PEDIDO 🚀 (v2.5)'}
                     </button>
                 </div>
             </div>

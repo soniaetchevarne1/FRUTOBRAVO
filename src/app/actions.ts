@@ -57,7 +57,10 @@ export async function uploadImageAction(formData: FormData) {
 
 export async function createOrderAction(order: Order) {
     try {
-        console.log('Iniciando creación de pedido en servidor:', order.id);
+        console.log('--- NUEVO PEDIDO ---');
+        console.log('ID:', order.id);
+        console.log('Entorno:', process.env.VERCEL === '1' ? 'Vercel (Producción)' : 'Local');
+        console.log('Total Items:', order.items?.length || 0);
 
         // Validación básica
         if (!order.items || order.items.length === 0) {
