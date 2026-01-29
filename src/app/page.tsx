@@ -115,29 +115,36 @@ export default function Home() {
                 { name: 'Mix Energético', price: '$5.500', img: '/products/mix-energetico.png', badge: '💪 POWER', slug: 'mix-energetico' },
                 { name: 'Castañas de Cajú', price: '$14.000', img: '/products/castanas_premium.png', badge: '👑 PREMIUM', slug: 'castanas-caju' }
               ].map((prod, i) => (
-                <Link key={i} href={`/tienda/${prod.slug}`} className={`card ${styles.productCard} ${styles.favoriteCard}`} style={{
+                <div key={i} className={`card ${styles.productCard} ${styles.favoriteCard}`} style={{
                   overflow: 'hidden',
                   border: '2px solid #eee',
                   position: 'relative',
                   display: 'block',
-                  textDecoration: 'none',
-                  color: 'inherit'
+                  cursor: 'default'
                 }}>
                   <div className={styles.productBadge}>{prod.badge}</div>
                   <div className={styles.favImgContainer}>
-                    <img src={prod.img} alt={prod.name} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s ease' }} className={styles.productImage} />
+                    <img src={prod.img} alt={prod.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} className={styles.productImage} />
                   </div>
                   <div className={styles.favInfoContainer}>
                     <h3 className={styles.favTitle}>{prod.name}</h3>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '0.5rem', fontWeight: 600 }} className={styles.favDesc}>✨ Cosecha Seleccionada</p>
+                    <div style={{
+                      background: '#f0fdf4',
+                      color: '#166534',
+                      display: 'inline-block',
+                      padding: '0.2rem 0.6rem',
+                      borderRadius: '4px',
+                      fontSize: '0.7rem',
+                      fontWeight: 800,
+                      marginBottom: '0.5rem'
+                    }}>
+                      DESDE EL PRECIO MÁS BAJO
+                    </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span className={styles.favPrice}>{prod.price}</span>
-                      <div className={styles.addBtnBrave}>
-                        <span>+</span>
-                      </div>
                     </div>
                   </div>
-                </Link>
+                </div>
               ))}
             </div>
           </div>
