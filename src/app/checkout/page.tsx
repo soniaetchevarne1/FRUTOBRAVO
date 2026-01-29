@@ -25,7 +25,7 @@ export default function CheckoutPage() {
     const descuento = pago === 'efectivo' ? cartTotal * 0.10 : 0;
     const total = cartTotal + costoEnvio - descuento;
 
-    const enviarPedido = () => {
+    const enviarPedido = async () => {
         if (!nombre || !telefono || !email) {
             alert('Por favor completa Nombre, Teléfono y Email');
             return;
@@ -38,7 +38,7 @@ export default function CheckoutPage() {
         setEnviando(true);
 
         try {
-            console.log('Procesando pedido v2.9 (Final)...');
+            console.log('Procesando pedido v3.0 (Sincronizado)...');
             const pedidoId = 'PED-' + Date.now();
             const safeTotalValue = Number(total) || 0;
 
@@ -81,17 +81,20 @@ export default function CheckoutPage() {
 
             const waUrl = `https://wa.me/5493416091224?text=${encodeURIComponent(rawMessage)}`;
 
-            // 2. DISPARAR GUARDADO EN SEGUNDO PLANO (Fire and forget)
-            createOrderAction(pedido).then(() => {
-                console.log('Pedido guardado en la nube exitosamente.');
-            }).catch(e => console.error('Error al guardar en la nube:', e));
+            // 1. INTENTAR GUARDAR (Esperamos máximo 3 segundos)
+            console.log('Sincronizando con administración...');
+            try {
+                await Promise.race([
+                    createOrderAction(pedido),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout de Servidor')), 3000))
+                ]);
+            } catch (swallowedError) {
+                console.warn('La base de datos falló o tardó demasiado, ignorando para proceder a WhatsApp.');
+            }
 
-            // 3. LIMPIAR Y REDIRIGIR AL INSTANTE
+            // 2. REDIRIGIR A WHATSAPP
             clearCart();
-
-            // Un pequeño aviso de éxito antes de ir a WhatsApp (ayuda a ver si todo terminó bien)
-            alert('¡PEDIDO REGISTRADO EXITOSAMENTE! 🚀\n\nPresiona OK para abrir WhatsApp y enviarlo.');
-
+            alert('✅ PEDIDO REGISTRADO EXITOSAMENTE!\n\nPresiona OK para abrir WhatsApp y enviarlo.');
             window.location.href = waUrl;
 
         } catch (error: any) {
@@ -436,7 +439,7 @@ export default function CheckoutPage() {
                             width: '80%',
                             maxWidth: '300px',
                             padding: '1rem',
-                            background: enviando ? '#ccc' : '#D4AF37',
+                            background: enviando ? '#ccc' : '#22c55e',
                             color: 'white',
                             borderRadius: '12px',
                             fontSize: '1.2rem',
@@ -447,7 +450,7 @@ export default function CheckoutPage() {
                             marginTop: '1rem'
                         }}
                     >
-                        {enviando ? 'PROCESANDO...' : 'ENVIAR PEDIDO 🚀 (v2.9)'}
+                        {enviando ? 'PROCESANDO...' : 'ENVIAR PEDIDO 🚀 (v3.0)'}
                     </button>
                 </div>
             </div>
