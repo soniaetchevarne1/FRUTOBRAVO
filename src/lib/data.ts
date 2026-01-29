@@ -351,50 +351,7 @@ export const orders: Order[] = [
 ];
 
 export const blogContent: BlogContent[] = [
-    // Artículos
-    {
-        id: 'post-1',
-        type: 'articulo',
-        title: 'Beneficios de los Frutos Secos',
-        slug: 'beneficios-frutos-secos',
-        image: '/blog/almendras.png',
-        excerpt: 'Descubrí por qué incorporar nueces y almendras a tu dieta diaria puede mejorar tu salud cardiovascular y energía.',
-        content: 'Los frutos secos son una fuente increíble de nutrientes. Aportan grasas saludables, proteínas, fibra, vitaminas y minerales. Consumir un puñado al día puede ayudar a reducir el colesterol malo y mejorar la salud del corazón. Además, son un snack perfecto para mantener la saciedad entre comidas.',
-        date: '2026-01-15',
-        author: 'Lic. Nutrición Clara M.'
-    },
-    {
-        id: 'post-2',
-        type: 'articulo',
-        title: 'Especias que curan: Cúrcuma',
-        slug: 'propiedades-curcuma',
-        image: '/blog/curcuma.png',
-        excerpt: 'La cúrcuma no es solo color; es un potente antiinflamatorio natural. Aprendé cómo consumirla para potenciar sus efectos.',
-        content: 'La cúrcuma contiene curcumina, un compuesto bioactivo con potentes propiedades medicinales. Es un antiinflamatorio natural muy efectivo y un antioxidante muy potente. Para mejorar su absorción, es ideal consumirla junto con pimienta negra.',
-        date: '2026-01-10',
-        author: 'Sonia'
-    },
-    // Recetas
-    {
-        id: 'receta-1',
-        type: 'receta',
-        title: 'Leche de Almendras Casera',
-        slug: 'leche-almendras-casera',
-        image: '/recipes/leche-almendras.png',
-        description: 'Prepará tu propia leche vegetal cremosa, sin aditivos y en pocos pasos.',
-        prepTime: '15 min (+ remojo)',
-        difficulty: 'Fácil',
-        ingredients: [
-            { productId: '1', name: 'Almendras Nonpareil', quantity: 1 }
-        ],
-        steps: [
-            'Dejar las almendras en remojo durante al menos 8 horas.',
-            'Colar y enjuagar bien las almendras.',
-            'Licuar con 3 tazas de agua filtrada por cada taza de almendras.',
-            'Colar con una bolsa de tela o lienzo fino apretando bien para extraer todo el líquido.',
-            'Endulzar a gusto con miel, stevia o dátiles y guardar en heladera por hasta 3 días.'
-        ]
-    },
+    // Recetas (Prioridad arriba)
     {
         id: 'receta-2',
         type: 'receta',
@@ -417,5 +374,48 @@ export const blogContent: BlogContent[] = [
             'Verter en una budinera aceitada o con papel manteca.',
             'Hornear por 30-40 minutos o hasta que al pinchar salga seco.'
         ]
+    },
+    {
+        id: 'receta-1',
+        type: 'receta',
+        title: 'Leche de Almendras Casera',
+        slug: 'leche-almendras-casera',
+        image: '/recipes/leche-almendras.png',
+        description: 'Prepará tu propia leche vegetal cremosa, sin aditivos y en pocos pasos.',
+        prepTime: '15 min (+ remojo)',
+        difficulty: 'Fácil',
+        ingredients: [
+            { productId: '1', name: 'Almendras Nonpareil', quantity: 1 }
+        ],
+        steps: [
+            'Dejar las almendras en remojo durante al menos 8 horas.',
+            'Colar y enjuagar bien las almendras.',
+            'Licuar con 3 tazas de agua filtrada por cada taza de almendras.',
+            'Colar con una bolsa de tela o lienzo fino apretando bien para extraer todo el líquido.',
+            'Endulzar a gusto con miel, stevia o dátiles y guardar en heladera por hasta 3 días.'
+        ]
+    },
+    // Artículos
+    {
+        id: 'post-1',
+        type: 'articulo',
+        title: 'Beneficios de los Frutos Secos',
+        slug: 'beneficios-frutos-secos',
+        image: '/blog/almendras.png',
+        excerpt: 'Descubrí por qué incorporar nueces y almendras a tu dieta diaria puede mejorar tu salud cardiovascular y energía.',
+        content: 'Los frutos secos son una fuente increíble de nutrientes. Aportan grasas saludables, proteínas, fibra, vitaminas y minerales. Consumir un puñado al día puede ayudar a reducir el colesterol malo y mejorar la salud del corazón. Además, son un snack perfecto para mantener la saciedad entre comidas.',
+        date: '2026-01-15',
+        author: 'Lic. Nutrición Clara M.'
+    },
+    {
+        id: 'post-2',
+        type: 'articulo',
+        title: 'Especias que curan: Cúrcuma',
+        slug: 'propiedades-curcuma',
+        image: '/blog/curcuma.png',
+        excerpt: 'La cúrcuma no es solo color; es un potente antiinflamatorio natural. Aprendé cómo consumirla para potenciar sus efectos.',
+        content: 'La cúrcuma contiene curcumina, un compuesto bioactivo con potentes propiedades medicinales. Es un antiinflamatorio natural muy efectivo y un antioxidante muy potente. Para mejorar su absorción, es ideal consumirla junto con pimienta negra.',
+        date: '2026-01-10',
+        author: 'Sonia'
     }
 ];
