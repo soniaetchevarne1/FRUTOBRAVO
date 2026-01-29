@@ -9,9 +9,9 @@ export default function Footer() {
                 <div className={styles.grid}>
                     {/* Brand */}
                     <div className={styles.column}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-                            <img src="/logo-fruto-bravo.png" alt="Frutos Bravos Logo" style={{ width: '50px', height: '50px', borderRadius: '50%' }} />
-                            <h3 className={styles.heading} style={{ margin: 0 }}>FRUTOS BRAVOS</h3>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
+                            <img src="/logo-fruto-bravo.png" alt="Frutos Bravos Logo" style={{ width: '80px', height: '80px', borderRadius: '50%', border: '2px solid var(--secondary)' }} />
+                            <h3 className={styles.heading} style={{ margin: 0, fontSize: '1.8rem' }}>FRUTOS BRAVOS</h3>
                         </div>
                         <p className={styles.text}>
                             Alimentos saludables, frescos y de la mejor calidad. Venta mayorista y minorista.
