@@ -446,15 +446,16 @@ export default function CheckoutPage() {
                             padding: '1rem',
                             background: enviando ? '#ccc' : '#D4AF37',
                             color: 'white',
-                            border: 'none',
                             borderRadius: '12px',
-                            fontSize: '1.1rem',
+                            fontSize: '1.2rem',
                             fontWeight: 900,
                             cursor: enviando ? 'not-allowed' : 'pointer',
-                            boxShadow: '0 4px 15px rgba(212, 175, 55, 0.3)'
+                            border: 'none',
+                            boxShadow: '0 4px 15px rgba(212, 175, 55, 0.3)',
+                            marginTop: '1rem'
                         }}
                     >
-                        {enviando ? 'ENVIANDO...' : 'FINALIZAR PEDIDO 🚀'}
+                        {enviando ? 'PROCESANDO...' : 'ENVIAR PEDIDO 🚀 (v2.0)'}
                     </button>
                 </div>
             </div>
