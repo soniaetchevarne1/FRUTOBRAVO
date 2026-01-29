@@ -22,25 +22,28 @@ async function getLocalData() {
 // --- PRODUCTS ---
 
 export async function getProducts(): Promise<Product[]> {
-    if (!isVercel) {
-        const data = await getLocalData();
-        return data.products || [];
-    }
-
     try {
+        if (!isVercel) {
+            const data = await getLocalData();
+            return data.products || [];
+        }
+
         const client = await clientPromise;
         const db = client.db(DB_NAME);
-        console.log(`Intentando buscar productos en la colección 'products'...`);
-        // Sort by order if exists, otherwise by category and name
         const products = await db.collection<Product>('products')
             .find({})
             .sort({ order: 1, category: 1, name: 1 })
             .toArray();
-        console.log(`Se encontraron ${products.length} productos en la base de datos.`);
         return products;
     } catch (error) {
-        console.error('Error crítico obteniendo productos de MongoDB:', error);
-        return [];
+        console.error('Error in getProducts, falling back to local data:', error);
+        // Fallback to local data even on Vercel if DB fails
+        try {
+            const data = await getLocalData();
+            return data.products || [];
+        } catch (localError) {
+            return [];
+        }
     }
 }
 
@@ -148,19 +151,24 @@ export async function reorderProducts(products: Product[]) {
 // --- ORDERS ---
 
 export async function getOrders(): Promise<Order[]> {
-    if (!isVercel) {
-        const data = await getLocalData();
-        return data.orders || [];
-    }
-
     try {
+        if (!isVercel) {
+            const data = await getLocalData();
+            return data.orders || [];
+        }
+
         const client = await clientPromise;
         const db = client.db(DB_NAME);
         const orders = await db.collection<Order>('orders').find({}).sort({ date: -1 }).toArray();
         return orders;
     } catch (error) {
-        console.error('Error obteniendo órdenes:', error);
-        return [];
+        console.error('Error obteniendo órdenes, intentando local:', error);
+        try {
+            const data = await getLocalData();
+            return data.orders || [];
+        } catch (e) {
+            return [];
+        }
     }
 }
 
