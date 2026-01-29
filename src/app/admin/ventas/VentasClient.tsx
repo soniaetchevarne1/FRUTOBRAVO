@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Order } from '@/lib/types';
 import { updateOrderStatusAction } from '@/app/actions';
 import { Package, ChevronDown, ChevronUp, Clock, CheckCircle, Truck, DollarSign } from 'lucide-react';
@@ -8,6 +8,14 @@ import { Package, ChevronDown, ChevronUp, Clock, CheckCircle, Truck, DollarSign 
 export default function VentasClient({ initialOrders }: { initialOrders: Order[] }) {
     const [orders, setOrders] = useState<Order[]>(initialOrders);
     const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
+    const [isCloud, setIsCloud] = useState(false);
+
+    useEffect(() => {
+        // Detectar si estamos en producción (Vercel)
+        if (window.location.hostname.includes('vercel.app')) {
+            setIsCloud(true);
+        }
+    }, []);
 
     const toggleExpand = (id: string) => {
         setExpandedOrder(expandedOrder === id ? null : id);
@@ -44,6 +52,16 @@ export default function VentasClient({ initialOrders }: { initialOrders: Order[]
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                 <h1 className="h2" style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                     <DollarSign size={28} /> Ventas y Pedidos
+                    <span style={{
+                        fontSize: '0.7rem',
+                        padding: '0.2rem 0.5rem',
+                        background: isCloud ? '#dcfce7' : '#fee2e2',
+                        color: isCloud ? '#166534' : '#991b1b',
+                        borderRadius: '4px',
+                        marginLeft: '1rem'
+                    }}>
+                        {isCloud ? '📡 NUBE (MONGODB)' : '💻 COMPUTADORA (LOCAL)'}
+                    </span>
                 </h1>
                 <button
                     onClick={() => window.location.reload()}
