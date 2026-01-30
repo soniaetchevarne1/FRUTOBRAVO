@@ -33,9 +33,9 @@ export default function Footer() {
                     <div className={styles.column}>
                         <h4 className={styles.subheading}>Contacto</h4>
                         <ul className={styles.contactList}>
-                            <li><Mail size={16} /> info@frutosbravos.com.ar</li>
-                            <li><Phone size={16} /> +54 9 11 1234 5678</li>
-                            <li><MapPin size={16} /> Buenos Aires, Argentina</li>
+                            <li><Mail size={16} /> frutosbravos@gmail.com</li>
+                            <li><Phone size={16} /> 3416091224</li>
+                            <li><MapPin size={16} /> Rosario, Santa Fe, Argentina</li>
                         </ul>
                     </div>
 
