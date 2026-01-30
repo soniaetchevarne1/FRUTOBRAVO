@@ -1,5 +1,7 @@
 import { Product, Order, BlogContent } from './types';
 
+// Updated: 2026-01-29 - New Mix product images
+
 export const products: Product[] = [
     // Frutos Secos
     {
