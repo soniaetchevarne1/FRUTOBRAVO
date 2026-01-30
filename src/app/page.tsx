@@ -113,7 +113,6 @@ export default function Home() {
                 { name: 'Almendras Premium', price: '$12.000', img: '/products/almendras.png', badge: '🔥 TOP', slug: 'almendras-nonpareil' },
                 { name: 'Nueces Mariposa', price: '$10.500', img: '/products/nueces_premium.png', badge: '⚡ NUEVO', slug: 'nueces-mariposa' },
                 { name: 'Mix Energético', price: '$5.500', img: '/products/mix-energetico.png', badge: '💪 POWER', slug: 'mix-energetico' },
-                { name: 'Castañas de Cajú', price: '$14.000', img: '/products/castanas_premium.png', badge: '👑 PREMIUM', slug: 'castanas-caju' }
               ].map((prod, i) => (
                 <div key={i} className={`card ${styles.productCard} ${styles.favoriteCard}`} style={{
                   overflow: 'hidden',
