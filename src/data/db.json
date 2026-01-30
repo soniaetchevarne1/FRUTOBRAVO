@@ -108,7 +108,7 @@
       "priceWholesale": 4800,
       "unit": "kg",
       "stock": 40,
-      "image": "/uploads/1769736951367-mix-tropical.png"
+      "image": "/frutos-secos/mix-tropical.png"
     },
     {
       "id": "5",
@@ -194,7 +194,7 @@
       "priceWholesale": 6200,
       "unit": "kg",
       "stock": 50,
-      "image": "/placeholder/mix-sin-pasas.jpg"
+      "image": "/frutos-secos/mix-sin-pasas.png"
     },
     {
       "id": "14",
@@ -206,7 +206,7 @@
       "priceWholesale": 8500,
       "unit": "kg",
       "stock": 25,
-      "image": "/placeholder/mix-premium-sin-pasas-mani.jpg"
+      "image": "/frutos-secos/mix-premium-sin-pasas-mani.png"
     },
     {
       "id": "15",
@@ -218,7 +218,7 @@
       "priceWholesale": 3800,
       "unit": "kg",
       "stock": 60,
-      "image": "/placeholder/mix-salado.jpg"
+      "image": "/frutos-secos/mix-salado.png"
     },
     {
       "id": "16",
@@ -230,7 +230,7 @@
       "priceWholesale": 3500,
       "unit": "kg",
       "stock": 100,
-      "image": "/placeholder/mix-cervecero.jpg"
+      "image": "/frutos-secos/mix-cervecero.png"
     },
     {
       "id": "17",
