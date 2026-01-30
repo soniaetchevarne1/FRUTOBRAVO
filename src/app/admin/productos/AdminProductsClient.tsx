@@ -97,13 +97,14 @@ export default function AdminProductsClient({ initialProducts }: { initialProduc
         const newProduct: Product = {
             id: `new-${Date.now()}`,
             name: '',
-            category: '',
+            category: 'Otros',
             priceRetail: 0,
             priceWholesale: 0,
             stock: 0,
             unit: 'kg',
             description: '',
-            image: ''
+            image: '',
+            slug: ''
         };
 
         setProducts([newProduct, ...products]);
@@ -212,7 +213,7 @@ export default function AdminProductsClient({ initialProducts }: { initialProduc
                                                     </div>
                                                 )}
                                                 <input
-                                                    ref={(el) => fileInputRefs.current[product.id] = el}
+                                                    ref={(el) => { fileInputRefs.current[product.id] = el; }}
                                                     type="file"
                                                     accept="image/*"
                                                     style={{ display: 'none' }}
