@@ -1,31 +1,22 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styles from '../admin.module.css';
-import { Edit, Trash2, Plus, Search, ChevronUp, ChevronDown } from 'lucide-react';
+import { Save, X, Trash2, Plus, Search, Upload, Image as ImageIcon } from 'lucide-react';
 import { Product } from '@/lib/types';
-import { deleteProductAction, reorderProductsAction } from '@/app/actions';
-import ProductForm from './ProductForm';
-
-// We can't import `getProducts` directly in Client Component if it uses `fs`.
-// Strategy: Make the page a Server Component that passes data to a Client Component "ProductList".
-// BUT to keep it simple, I'll fetch data via a classic API route or just reload. 
-// Actually, let's use the Pattern: Page (Server) -> ClientList (Client).
+import { deleteProductAction, updateProductAction } from '@/app/actions';
 
 export default function AdminProductsClient({ initialProducts }: { initialProducts: Product[] }) {
     const [products, setProducts] = useState<Product[]>(initialProducts);
     const [searchTerm, setSearchTerm] = useState('');
-    const [isFormOpen, setIsFormOpen] = useState(false);
-    const [editingProduct, setEditingProduct] = useState<Product | undefined>(undefined);
+    const [editingId, setEditingId] = useState<string | null>(null);
+    const [editedProduct, setEditedProduct] = useState<Product | null>(null);
+    const [uploadingImage, setUploadingImage] = useState(false);
+    const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
 
-    // Sync with server state if revalidated? 
-    // In Next.js App Router, router.refresh() handles this. 
-    // For this simple custom DB, we might need manual refresh or just trust the initialProducts prop updates on revalidatePath.
     useEffect(() => {
         setProducts(initialProducts);
     }, [initialProducts]);
-
-    // View mode removed at user request
 
     const filteredProducts = products.filter(p =>
         p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -39,28 +30,85 @@ export default function AdminProductsClient({ initialProducts }: { initialProduc
     };
 
     const handleEdit = (product: Product) => {
-        setEditingProduct(product);
-        setIsFormOpen(true);
+        setEditingId(product.id);
+        setEditedProduct({ ...product });
+    };
+
+    const handleCancel = () => {
+        setEditingId(null);
+        setEditedProduct(null);
+    };
+
+    const handleSave = async () => {
+        if (editedProduct) {
+            await updateProductAction(editedProduct);
+            setEditingId(null);
+            setEditedProduct(null);
+        }
+    };
+
+    const handleFieldChange = (field: keyof Product, value: any) => {
+        if (editedProduct) {
+            setEditedProduct({
+                ...editedProduct,
+                [field]: value
+            });
+        }
+    };
+
+    const handleImageUpload = async (productId: string, file: File) => {
+        setUploadingImage(true);
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const imageUrl = data.url;
+
+                // Actualizar la imagen en el producto editado
+                if (editedProduct && editedProduct.id === productId) {
+                    handleFieldChange('image', imageUrl);
+                } else {
+                    // Si no está en modo edición, actualizar directamente
+                    const product = products.find(p => p.id === productId);
+                    if (product) {
+                        const updatedProduct = { ...product, image: imageUrl };
+                        await updateProductAction(updatedProduct);
+                    }
+                }
+            } else {
+                alert('Error al subir la imagen');
+            }
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            alert('Error al subir la imagen');
+        } finally {
+            setUploadingImage(false);
+        }
     };
 
     const handleNew = () => {
-        setEditingProduct(undefined);
-        setIsFormOpen(true);
-    };
+        const newProduct: Product = {
+            id: `new-${Date.now()}`,
+            name: '',
+            category: '',
+            priceRetail: 0,
+            priceWholesale: 0,
+            stock: 0,
+            unit: 'kg',
+            description: '',
+            image: ''
+        };
 
-    const handleMove = async (index: number, direction: 'up' | 'down') => {
-        const newProducts = [...products];
-        const targetIndex = direction === 'up' ? index - 1 : index + 1;
-
-        if (targetIndex < 0 || targetIndex >= newProducts.length) return;
-
-        // Swap
-        const temp = newProducts[index];
-        newProducts[index] = newProducts[targetIndex];
-        newProducts[targetIndex] = temp;
-
-        setProducts(newProducts);
-        await reorderProductsAction(newProducts);
+        setProducts([newProduct, ...products]);
+        setEditingId(newProduct.id);
+        setEditedProduct(newProduct);
     };
 
     return (
@@ -68,14 +116,14 @@ export default function AdminProductsClient({ initialProducts }: { initialProduc
             <div className={styles.header}>
                 <div>
                     <h1 className="h2" style={{ color: 'var(--text-main)', marginBottom: '0.5rem' }}>Gestión de Productos</h1>
-                    <p className="body-sm">Administra tu catálogo, precios y stock.</p>
+                    <p className="body-sm">Haz clic en una fila para editar directamente</p>
                 </div>
                 <button className="btn btn-primary" onClick={handleNew}>
                     <Plus size={20} /> Nuevo Producto
                 </button>
             </div>
 
-            {/* Filters & Toggle */}
+            {/* Filters */}
             <div style={{
                 background: 'white',
                 padding: '1rem',
@@ -83,10 +131,8 @@ export default function AdminProductsClient({ initialProducts }: { initialProduc
                 border: '1px solid var(--border)',
                 marginBottom: '1.5rem',
                 display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
                 gap: '1rem',
-                flexWrap: 'wrap'
+                alignItems: 'center'
             }}>
                 <div style={{ position: 'relative', flex: 1, minWidth: '250px' }}>
                     <Search size={20} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
@@ -98,77 +144,277 @@ export default function AdminProductsClient({ initialProducts }: { initialProduc
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
-
             </div>
 
-            {/* Only Grid View (Cards) */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
-                {filteredProducts.map((product, index) => (
-                    <div key={product.id} className={styles.tableCard} style={{ padding: '1rem', position: 'relative' }}>
-                        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-                            <div style={{ width: '80px', height: '80px', flexShrink: 0 }}>
-                                {product.image ? (
-                                    <img src={product.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
-                                ) : (
-                                    <div style={{ width: '100%', height: '100%', background: '#f3f4f6', borderRadius: '8px' }}></div>
-                                )}
-                            </div>
-                            <div style={{ flex: 1 }}>
-                                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: '4px' }}>{product.category}</div>
-                                <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>{product.name}</h4>
-                                <div style={{ marginTop: '4px', fontSize: '0.9rem', color: product.stock < 10 ? 'var(--error)' : 'var(--success)', fontWeight: 600 }}>
-                                    Stock: {product.stock} {product.unit}
-                                </div>
-                            </div>
-                        </div>
+            {/* Table View - Excel Style with Inline Editing */}
+            <div className={styles.tableCard} style={{ overflowX: 'auto' }}>
+                <table className={styles.table}>
+                    <thead>
+                        <tr>
+                            <th style={{ width: '100px' }}>Imagen</th>
+                            <th>Nombre</th>
+                            <th>Categoría</th>
+                            <th>Precio Minorista</th>
+                            <th>Precio Mayorista</th>
+                            <th>Stock</th>
+                            <th>Unidad</th>
+                            <th style={{ width: '200px' }}>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {filteredProducts.length === 0 ? (
+                            <tr>
+                                <td colSpan={8} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-secondary)' }}>
+                                    No hay productos registrados.
+                                </td>
+                            </tr>
+                        ) : (
+                            filteredProducts.map((product) => {
+                                const isEditing = editingId === product.id;
+                                const displayProduct = isEditing && editedProduct ? editedProduct : product;
 
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '1rem', background: '#f8f9fa', padding: '10px', borderRadius: '8px' }}>
-                            <div>
-                                <div style={{ fontSize: '0.7rem', color: '#666' }}>Minorista</div>
-                                <div style={{ fontWeight: 700, color: 'var(--primary)' }}>${new Intl.NumberFormat('es-AR').format(product.priceRetail)}</div>
-                            </div>
-                            <div>
-                                <div style={{ fontSize: '0.7rem', color: '#666' }}>Mayorista</div>
-                                <div style={{ fontWeight: 700, color: 'var(--primary)' }}>${new Intl.NumberFormat('es-AR').format(product.priceWholesale)}</div>
-                            </div>
-                        </div>
+                                return (
+                                    <tr
+                                        key={product.id}
+                                        style={{
+                                            background: isEditing ? '#fffbeb' : 'transparent',
+                                            cursor: isEditing ? 'default' : 'pointer'
+                                        }}
+                                        onClick={() => !isEditing && handleEdit(product)}
+                                    >
+                                        {/* Columna de Imagen */}
+                                        <td onClick={(e) => e.stopPropagation()}>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'center' }}>
+                                                {displayProduct.image ? (
+                                                    <img
+                                                        src={displayProduct.image}
+                                                        alt={displayProduct.name}
+                                                        style={{
+                                                            width: '60px',
+                                                            height: '60px',
+                                                            objectFit: 'cover',
+                                                            borderRadius: '6px',
+                                                            border: '1px solid var(--border)'
+                                                        }}
+                                                    />
+                                                ) : (
+                                                    <div style={{
+                                                        width: '60px',
+                                                        height: '60px',
+                                                        background: '#f3f4f6',
+                                                        borderRadius: '6px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        border: '1px solid var(--border)'
+                                                    }}>
+                                                        <ImageIcon size={24} color="#9ca3af" />
+                                                    </div>
+                                                )}
+                                                <input
+                                                    ref={(el) => fileInputRefs.current[product.id] = el}
+                                                    type="file"
+                                                    accept="image/*"
+                                                    style={{ display: 'none' }}
+                                                    onChange={(e) => {
+                                                        const file = e.target.files?.[0];
+                                                        if (file) {
+                                                            handleImageUpload(product.id, file);
+                                                        }
+                                                    }}
+                                                />
+                                                <button
+                                                    onClick={() => fileInputRefs.current[product.id]?.click()}
+                                                    disabled={uploadingImage}
+                                                    style={{
+                                                        padding: '4px 8px',
+                                                        fontSize: '0.75rem',
+                                                        background: 'var(--primary)',
+                                                        color: 'white',
+                                                        border: 'none',
+                                                        borderRadius: '4px',
+                                                        cursor: uploadingImage ? 'wait' : 'pointer',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '4px'
+                                                    }}
+                                                >
+                                                    <Upload size={12} />
+                                                    {uploadingImage ? 'Subiendo...' : 'Cambiar'}
+                                                </button>
+                                            </div>
+                                        </td>
 
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <div style={{ display: 'flex', gap: '4px' }}>
-                                <button
-                                    disabled={index === 0}
-                                    onClick={() => handleMove(index, 'up')}
-                                    style={{ padding: '4px', color: index === 0 ? '#ccc' : 'var(--primary)' }}
-                                >
-                                    <ChevronUp size={20} />
-                                </button>
-                                <button
-                                    disabled={index === filteredProducts.length - 1}
-                                    onClick={() => handleMove(index, 'down')}
-                                    style={{ padding: '4px', color: index === filteredProducts.length - 1 ? '#ccc' : 'var(--primary)' }}
-                                >
-                                    <ChevronDown size={20} />
-                                </button>
-                            </div>
-                            <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                <button onClick={() => handleEdit(product)} className="btn" style={{ padding: '8px 16px', background: 'var(--surface-alt)', color: 'var(--primary)', border: '1px solid var(--border)', fontSize: '0.85rem' }}>
-                                    <Edit size={16} /> Editar
-                                </button>
-                                <button onClick={() => handleDelete(product.id)} className="btn" style={{ padding: '8px 16px', background: '#fee2e2', color: 'var(--error)', border: 'none', fontSize: '0.85rem' }}>
-                                    <Trash2 size={16} />
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                ))}
+                                        <td>
+                                            {isEditing ? (
+                                                <input
+                                                    type="text"
+                                                    value={displayProduct.name}
+                                                    onChange={(e) => handleFieldChange('name', e.target.value)}
+                                                    style={{
+                                                        width: '100%',
+                                                        padding: '4px 8px',
+                                                        border: '1px solid var(--primary)',
+                                                        borderRadius: '4px',
+                                                        fontWeight: 600
+                                                    }}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                />
+                                            ) : (
+                                                <span style={{ fontWeight: 600 }}>{product.name}</span>
+                                            )}
+                                        </td>
+                                        <td>
+                                            {isEditing ? (
+                                                <input
+                                                    type="text"
+                                                    value={displayProduct.category}
+                                                    onChange={(e) => handleFieldChange('category', e.target.value)}
+                                                    style={{
+                                                        width: '100%',
+                                                        padding: '4px 8px',
+                                                        border: '1px solid var(--primary)',
+                                                        borderRadius: '4px'
+                                                    }}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                />
+                                            ) : (
+                                                product.category
+                                            )}
+                                        </td>
+                                        <td>
+                                            {isEditing ? (
+                                                <input
+                                                    type="number"
+                                                    value={displayProduct.priceRetail}
+                                                    onChange={(e) => handleFieldChange('priceRetail', parseFloat(e.target.value) || 0)}
+                                                    style={{
+                                                        width: '100%',
+                                                        padding: '4px 8px',
+                                                        border: '1px solid var(--primary)',
+                                                        borderRadius: '4px'
+                                                    }}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                />
+                                            ) : (
+                                                `$${new Intl.NumberFormat('es-AR').format(product.priceRetail)}`
+                                            )}
+                                        </td>
+                                        <td>
+                                            {isEditing ? (
+                                                <input
+                                                    type="number"
+                                                    value={displayProduct.priceWholesale}
+                                                    onChange={(e) => handleFieldChange('priceWholesale', parseFloat(e.target.value) || 0)}
+                                                    style={{
+                                                        width: '100%',
+                                                        padding: '4px 8px',
+                                                        border: '1px solid var(--primary)',
+                                                        borderRadius: '4px'
+                                                    }}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                />
+                                            ) : (
+                                                `$${new Intl.NumberFormat('es-AR').format(product.priceWholesale)}`
+                                            )}
+                                        </td>
+                                        <td>
+                                            {isEditing ? (
+                                                <input
+                                                    type="number"
+                                                    value={displayProduct.stock}
+                                                    onChange={(e) => handleFieldChange('stock', parseInt(e.target.value) || 0)}
+                                                    style={{
+                                                        width: '100%',
+                                                        padding: '4px 8px',
+                                                        border: '1px solid var(--primary)',
+                                                        borderRadius: '4px'
+                                                    }}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                />
+                                            ) : (
+                                                <span style={{ color: product.stock < 10 ? 'var(--error)' : 'var(--text-main)' }}>
+                                                    {product.stock}
+                                                </span>
+                                            )}
+                                        </td>
+                                        <td>
+                                            {isEditing ? (
+                                                <select
+                                                    value={displayProduct.unit}
+                                                    onChange={(e) => handleFieldChange('unit', e.target.value)}
+                                                    style={{
+                                                        width: '100%',
+                                                        padding: '4px 8px',
+                                                        border: '1px solid var(--primary)',
+                                                        borderRadius: '4px'
+                                                    }}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                >
+                                                    <option value="kg">kg</option>
+                                                    <option value="g">g</option>
+                                                    <option value="unidad">unidad</option>
+                                                    <option value="paquete">paquete</option>
+                                                </select>
+                                            ) : (
+                                                product.unit
+                                            )}
+                                        </td>
+                                        <td onClick={(e) => e.stopPropagation()}>
+                                            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                                {isEditing ? (
+                                                    <>
+                                                        <button
+                                                            onClick={handleSave}
+                                                            className="btn"
+                                                            style={{
+                                                                padding: '6px 12px',
+                                                                background: 'var(--success)',
+                                                                color: 'white',
+                                                                border: 'none',
+                                                                fontSize: '0.85rem'
+                                                            }}
+                                                        >
+                                                            <Save size={16} /> Guardar
+                                                        </button>
+                                                        <button
+                                                            onClick={handleCancel}
+                                                            className="btn"
+                                                            style={{
+                                                                padding: '6px 12px',
+                                                                background: '#e5e7eb',
+                                                                color: '#374151',
+                                                                border: 'none',
+                                                                fontSize: '0.85rem'
+                                                            }}
+                                                        >
+                                                            <X size={16} /> Cancelar
+                                                        </button>
+                                                    </>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => handleDelete(product.id)}
+                                                        className="btn"
+                                                        style={{
+                                                            padding: '6px 12px',
+                                                            background: '#fee2e2',
+                                                            color: 'var(--error)',
+                                                            border: 'none',
+                                                            fontSize: '0.85rem'
+                                                        }}
+                                                    >
+                                                        <Trash2 size={16} /> Eliminar
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                );
+                            })
+                        )}
+                    </tbody>
+                </table>
             </div>
-
-            {isFormOpen && (
-                <ProductForm
-                    initialProduct={editingProduct}
-                    onClose={() => setIsFormOpen(false)}
-                />
-            )}
         </>
     );
 }
