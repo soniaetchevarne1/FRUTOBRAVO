@@ -6,7 +6,7 @@ import Footer from '@/components/Footer';
 import { Category, Product } from '@/lib/types';
 import { useStore } from '@/context/StoreContext';
 import styles from './page.module.css';
-import { Filter, Minus, Plus, ShoppingCart, SearchX } from 'lucide-react';
+import { Filter, Minus, Plus, ShoppingCart, SearchX, X } from 'lucide-react';
 import SideCart from './SideCart';
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -18,11 +18,471 @@ const WEIGHT_OPTIONS = [
     { value: 250, label: '250g', multiplier: 0.25 }
 ];
 
+// Modal de vista detallada del producto
+function ProductModal({ product, isOpen, onClose, onAdd }: {
+    product: Product,
+    isOpen: boolean,
+    onClose: () => void,
+    onAdd: () => void
+}) {
+    const { addToCart, isWholesale } = useStore();
+    const [selectedWeight, setSelectedWeight] = useState(WEIGHT_OPTIONS[0]);
+    const [quantity, setQuantity] = useState(1);
+    const [showToast, setShowToast] = useState(false);
+
+    const isOutOfStock = product.stock === 0;
+    const basePrice = isWholesale ? product.priceWholesale : product.priceRetail;
+    const adjustedPrice = basePrice * selectedWeight.multiplier;
+    const totalPrice = adjustedPrice * quantity;
+
+    const handleAddToCart = () => {
+        if (isOutOfStock) return;
+        const modifiedProduct = {
+            ...product,
+            priceRetail: adjustedPrice,
+            priceWholesale: adjustedPrice,
+            name: `${product.name} (${selectedWeight.label})`
+        };
+        addToCart(modifiedProduct, quantity);
+        setShowToast(true);
+        onAdd();
+        setTimeout(() => {
+            setShowToast(false);
+            onClose();
+        }, 1500);
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <div
+            style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(0, 0, 0, 0.75)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 1000,
+                padding: '1rem',
+                backdropFilter: 'blur(4px)',
+                animation: 'fadeIn 0.2s ease-out'
+            }}
+            onClick={onClose}
+        >
+            <div
+                style={{
+                    background: 'white',
+                    borderRadius: '24px',
+                    maxWidth: '900px',
+                    width: '100%',
+                    maxHeight: '90vh',
+                    overflow: 'auto',
+                    position: 'relative',
+                    boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+                    animation: 'slideUp 0.3s ease-out'
+                }}
+                onClick={(e) => e.stopPropagation()}
+            >
+                {/* Botón cerrar */}
+                <button
+                    onClick={onClose}
+                    style={{
+                        position: 'absolute',
+                        top: '1rem',
+                        right: '1rem',
+                        background: 'white',
+                        border: 'none',
+                        borderRadius: '50%',
+                        width: '40px',
+                        height: '40px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                        zIndex: 10,
+                        transition: 'all 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'scale(1.1)';
+                        e.currentTarget.style.background = '#f5f5f5';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'scale(1)';
+                        e.currentTarget.style.background = 'white';
+                    }}
+                >
+                    <X size={24} color="#333" />
+                </button>
+
+                {/* Toast de Agregado */}
+                {showToast && (
+                    <div style={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        background: 'white',
+                        padding: '2rem 3rem',
+                        borderRadius: '20px',
+                        boxShadow: '0 10px 40px rgba(0,0,0,0.3)',
+                        zIndex: 20,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '1rem',
+                        border: '3px solid var(--primary)',
+                        animation: 'bounceIn 0.5s ease-out'
+                    }}>
+                        <span style={{ fontSize: '3rem' }}>✨</span>
+                        <span style={{ fontWeight: 900, fontSize: '1.5rem', color: 'var(--primary)', letterSpacing: '1px' }}>
+                            ¡AGREGADO AL CARRITO! 🛒
+                        </span>
+                    </div>
+                )}
+
+                <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: window.innerWidth > 768 ? '1fr 1fr' : '1fr',
+                    gap: '2rem',
+                    padding: '2rem'
+                }}>
+                    {/* Columna izquierda: Imagen */}
+                    <div style={{ position: 'relative' }}>
+                        <div style={{
+                            width: '100%',
+                            height: window.innerWidth > 768 ? '500px' : '300px',
+                            borderRadius: '16px',
+                            overflow: 'hidden',
+                            background: '#f5f5f5',
+                            position: 'relative'
+                        }}>
+                            {product.image ? (
+                                <img
+                                    src={product.image}
+                                    alt={product.name}
+                                    style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        objectFit: 'cover'
+                                    }}
+                                />
+                            ) : (
+                                <div style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: '1.2rem',
+                                    color: '#999'
+                                }}>
+                                    {product.name}
+                                </div>
+                            )}
+
+                            {/* Overlay de Sin Stock */}
+                            {isOutOfStock && (
+                                <div style={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    width: '100%',
+                                    height: '100%',
+                                    backgroundColor: 'rgba(0,0,0,0.5)',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    color: 'white',
+                                    backdropFilter: 'blur(3px)'
+                                }}>
+                                    <div style={{ fontSize: '5rem', marginBottom: '1rem' }}>🌰💧</div>
+                                    <span style={{
+                                        background: '#ff4444',
+                                        padding: '8px 20px',
+                                        borderRadius: '50px',
+                                        fontWeight: 900,
+                                        fontSize: '1.2rem',
+                                        letterSpacing: '2px'
+                                    }}>SIN STOCK</span>
+                                    <p style={{ margin: '10px 0 0', fontSize: '0.9rem', fontWeight: 600 }}>
+                                        Pronto volveremos...
+                                    </p>
+                                </div>
+                            )}
+
+                            {product.isBestSeller && !isOutOfStock && (
+                                <span style={{
+                                    position: 'absolute',
+                                    top: 15,
+                                    left: 15,
+                                    background: 'var(--secondary)',
+                                    color: 'black',
+                                    padding: '8px 16px',
+                                    borderRadius: '8px',
+                                    fontSize: '0.9rem',
+                                    fontWeight: '700',
+                                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+                                }}>
+                                    ⭐ Bestseller
+                                </span>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Columna derecha: Información y compra */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                        <div>
+                            <div style={{
+                                display: 'inline-block',
+                                background: 'var(--primary)',
+                                color: 'white',
+                                padding: '6px 12px',
+                                borderRadius: '8px',
+                                fontSize: '0.85rem',
+                                fontWeight: '700',
+                                marginBottom: '1rem'
+                            }}>
+                                {product.category}
+                            </div>
+                            <h2 style={{
+                                fontSize: '2rem',
+                                fontWeight: '900',
+                                marginBottom: '1rem',
+                                color: '#333',
+                                lineHeight: '1.2'
+                            }}>
+                                {product.name}
+                            </h2>
+                            <p style={{
+                                fontSize: '1rem',
+                                color: '#666',
+                                lineHeight: '1.6',
+                                marginBottom: '1.5rem'
+                            }}>
+                                {product.description}
+                            </p>
+                        </div>
+
+                        {/* Selector de peso */}
+                        <div>
+                            <label style={{
+                                display: 'block',
+                                fontWeight: '700',
+                                marginBottom: '0.75rem',
+                                fontSize: '0.95rem',
+                                color: '#333'
+                            }}>
+                                Selecciona el peso:
+                            </label>
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                                {WEIGHT_OPTIONS.map((opt) => (
+                                    <button
+                                        key={opt.value}
+                                        disabled={isOutOfStock}
+                                        onClick={() => setSelectedWeight(opt)}
+                                        style={{
+                                            flex: 1,
+                                            padding: '12px',
+                                            fontSize: '0.95rem',
+                                            borderRadius: '12px',
+                                            border: selectedWeight.value === opt.value ? '3px solid var(--primary)' : '2px solid #ddd',
+                                            background: isOutOfStock ? '#eee' : (selectedWeight.value === opt.value ? 'var(--primary)' : 'white'),
+                                            color: selectedWeight.value === opt.value ? 'white' : '#666',
+                                            fontWeight: 800,
+                                            cursor: isOutOfStock ? 'not-allowed' : 'pointer',
+                                            transition: 'all 0.2s ease',
+                                            transform: selectedWeight.value === opt.value ? 'scale(1.05)' : 'scale(1)'
+                                        }}
+                                    >
+                                        {opt.label}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Precio y cantidad */}
+                        <div style={{
+                            background: '#f8f8f8',
+                            padding: '1.5rem',
+                            borderRadius: '16px',
+                            border: '2px solid #eee'
+                        }}>
+                            <div style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                marginBottom: '1rem'
+                            }}>
+                                <span style={{ fontWeight: '700', fontSize: '0.95rem', color: '#666' }}>
+                                    Precio total:
+                                </span>
+                                <div style={{
+                                    fontSize: '2rem',
+                                    fontWeight: '900',
+                                    color: 'var(--primary)',
+                                    display: 'flex',
+                                    alignItems: 'baseline',
+                                    gap: '4px'
+                                }}>
+                                    <span style={{ fontSize: '1.5rem' }}>$</span>
+                                    {new Intl.NumberFormat('es-AR').format(totalPrice)}
+                                </div>
+                            </div>
+
+                            {/* Selector de cantidad */}
+                            <div>
+                                <label style={{
+                                    display: 'block',
+                                    fontWeight: '700',
+                                    marginBottom: '0.75rem',
+                                    fontSize: '0.95rem',
+                                    color: '#333'
+                                }}>
+                                    Cantidad:
+                                </label>
+                                <div style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '1rem',
+                                    background: 'white',
+                                    padding: '0.5rem',
+                                    borderRadius: '12px',
+                                    border: '2px solid #ddd'
+                                }}>
+                                    <button
+                                        disabled={isOutOfStock}
+                                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                        style={{
+                                            background: 'var(--primary)',
+                                            border: 'none',
+                                            borderRadius: '8px',
+                                            width: '40px',
+                                            height: '40px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            cursor: isOutOfStock ? 'not-allowed' : 'pointer',
+                                            opacity: isOutOfStock ? 0.5 : 1,
+                                            transition: 'all 0.2s ease'
+                                        }}
+                                    >
+                                        <Minus size={20} color="white" strokeWidth={3} />
+                                    </button>
+                                    <span style={{
+                                        flex: 1,
+                                        textAlign: 'center',
+                                        fontSize: '1.5rem',
+                                        fontWeight: '900',
+                                        color: '#333'
+                                    }}>
+                                        {quantity}
+                                    </span>
+                                    <button
+                                        disabled={isOutOfStock}
+                                        onClick={() => setQuantity(quantity + 1)}
+                                        style={{
+                                            background: 'var(--primary)',
+                                            border: 'none',
+                                            borderRadius: '8px',
+                                            width: '40px',
+                                            height: '40px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            cursor: isOutOfStock ? 'not-allowed' : 'pointer',
+                                            opacity: isOutOfStock ? 0.5 : 1,
+                                            transition: 'all 0.2s ease'
+                                        }}
+                                    >
+                                        <Plus size={20} color="white" strokeWidth={3} />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Botón de agregar al carrito */}
+                        <button
+                            disabled={isOutOfStock}
+                            onClick={handleAddToCart}
+                            style={{
+                                width: '100%',
+                                padding: '1.25rem',
+                                fontSize: '1.1rem',
+                                fontWeight: '900',
+                                borderRadius: '16px',
+                                border: 'none',
+                                background: isOutOfStock ? '#ccc' : 'var(--primary)',
+                                color: 'white',
+                                cursor: isOutOfStock ? 'not-allowed' : 'pointer',
+                                transition: 'all 0.3s ease',
+                                letterSpacing: '1px',
+                                boxShadow: isOutOfStock ? 'none' : '0 4px 16px rgba(0,0,0,0.2)',
+                                transform: 'scale(1)'
+                            }}
+                            onMouseEnter={(e) => {
+                                if (!isOutOfStock) {
+                                    e.currentTarget.style.transform = 'scale(1.02)';
+                                    e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.3)';
+                                }
+                            }}
+                            onMouseLeave={(e) => {
+                                if (!isOutOfStock) {
+                                    e.currentTarget.style.transform = 'scale(1)';
+                                    e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.2)';
+                                }
+                            }}
+                        >
+                            {isOutOfStock ? 'AGOTADO 😿' : '¡AGREGAR AL CARRITO! 😋'}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <style jsx>{`
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                @keyframes slideUp {
+                    from {
+                        opacity: 0;
+                        transform: translateY(30px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+                @keyframes bounceIn {
+                    0% {
+                        opacity: 0;
+                        transform: translate(-50%, -50%) scale(0.3);
+                    }
+                    50% {
+                        transform: translate(-50%, -50%) scale(1.05);
+                    }
+                    100% {
+                        opacity: 1;
+                        transform: translate(-50%, -50%) scale(1);
+                    }
+                }
+            `}</style>
+        </div>
+    );
+}
+
 function ProductCard({ product, onAdd }: { product: Product, onAdd: () => void }) {
     const { addToCart, isWholesale } = useStore();
     const [selectedWeight, setSelectedWeight] = useState(WEIGHT_OPTIONS[0]);
     const [quantity, setQuantity] = useState(1);
     const [showToast, setShowToast] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const isOutOfStock = product.stock === 0;
 
@@ -45,163 +505,217 @@ function ProductCard({ product, onAdd }: { product: Product, onAdd: () => void }
     };
 
     return (
-        <div className={styles.productCard} style={{
-            position: 'relative',
-            opacity: isOutOfStock ? 0.7 : 1,
-            filter: isOutOfStock ? 'grayscale(0.6)' : 'none'
-        }}>
-            {/* Toast de Agregado */}
-            {showToast && (
-                <div className="toast-in" style={{
-                    position: 'absolute',
-                    top: '10px',
-                    right: '10px',
-                    left: '10px',
-                    background: 'white',
-                    padding: '0.5rem',
-                    borderRadius: '12px',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                    zIndex: 10,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.5rem',
-                    border: '2px solid var(--primary)'
-                }}>
-                    <span style={{ fontSize: '1.2rem' }}>✨</span>
-                    <span style={{ fontWeight: 800, fontSize: '0.85rem', color: 'var(--primary)', letterSpacing: '0.5px' }}>¡AL CARRITO! 🛒</span>
-                </div>
-            )}
+        <>
+            <ProductModal
+                product={product}
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onAdd={onAdd}
+            />
 
-            <div className={styles.imageContainer}>
-                {product.image ? (
-                    <img src={product.image} alt={product.name} style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                    }} />
-                ) : (
-                    <span>{product.name}</span>
-                )}
-
-                {/* Overlay de Sin Stock */}
-                {isOutOfStock && (
-                    <div style={{
+            <div className={styles.productCard} style={{
+                position: 'relative',
+                opacity: isOutOfStock ? 0.7 : 1,
+                filter: isOutOfStock ? 'grayscale(0.6)' : 'none'
+            }}>
+                {/* Toast de Agregado */}
+                {showToast && (
+                    <div className="toast-in" style={{
                         position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: '100%',
-                        backgroundColor: 'rgba(0,0,0,0.4)',
+                        top: '10px',
+                        right: '10px',
+                        left: '10px',
+                        background: 'white',
+                        padding: '0.5rem',
+                        borderRadius: '12px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                        zIndex: 10,
                         display: 'flex',
-                        flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        zIndex: 3,
-                        color: 'white',
-                        backdropFilter: 'blur(2px)'
+                        gap: '0.5rem',
+                        border: '2px solid var(--primary)'
                     }}>
-                        <div style={{ fontSize: '4rem', marginBottom: '0.5rem', filter: 'grayscale(1)' }}>🌰💧</div>
-                        <span style={{
-                            background: '#ff4444',
-                            padding: '4px 12px',
-                            borderRadius: '50px',
-                            fontWeight: 900,
-                            fontSize: '0.9rem',
-                            letterSpacing: '1px'
-                        }}>SIN STOCK</span>
-                        <p style={{ margin: '5px 0 0', fontSize: '0.7rem', fontWeight: 600 }}>Pronto volveremos...</p>
+                        <span style={{ fontSize: '1.2rem' }}>✨</span>
+                        <span style={{ fontWeight: 800, fontSize: '0.85rem', color: 'var(--primary)', letterSpacing: '0.5px' }}>¡AL CARRITO! 🛒</span>
                     </div>
                 )}
 
-                {product.isBestSeller && !isOutOfStock && (
-                    <span style={{
-                        position: 'absolute', top: 10, left: 10, background: 'var(--secondary)', color: 'black',
-                        padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: '600', zIndex: 2
-                    }}>
-                        Bestseller
-                    </span>
-                )}
-            </div>
-
-            <div className={styles.productInfo}>
-                <div className={styles.productCategory}>{product.category}</div>
-                <h3 className={styles.productName}>{product.name}</h3>
-
-                <p className={styles.productDescription} style={{
-                    fontSize: '0.85rem',
-                    color: 'var(--text-secondary)',
-                    marginBottom: '1rem',
-                    display: '-webkit-box',
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: 'vertical',
-                    overflow: 'hidden',
-                    minHeight: '2.5rem'
-                }}>
-                    {product.description}
-                </p>
-
-                {/* Weights Selector */}
-                <div className={styles.weightSelector} style={{ display: 'flex', gap: '4px', marginBottom: '1rem' }}>
-                    {WEIGHT_OPTIONS.map((opt) => (
-                        <button
-                            key={opt.value}
-                            disabled={isOutOfStock}
-                            onClick={() => setSelectedWeight(opt)}
-                            style={{
-                                flex: 1,
-                                padding: '6px 2px',
-                                fontSize: '0.75rem',
-                                borderRadius: '8px',
-                                border: selectedWeight.value === opt.value ? '2px solid var(--primary)' : '1px solid #ddd',
-                                background: isOutOfStock ? '#eee' : (selectedWeight.value === opt.value ? 'var(--primary)' : 'white'),
-                                color: selectedWeight.value === opt.value ? 'white' : '#666',
-                                fontWeight: 700,
-                                cursor: isOutOfStock ? 'not-allowed' : 'pointer',
-                                transition: 'all 0.2s ease'
-                            }}
-                        >
-                            {opt.label}
-                        </button>
-                    ))}
-                </div>
-
-                {/* Info de precio y cantidad */}
-                <div className={styles.priceQtyWrapper}>
-                    <div className={styles.productPriceBadge}>
-                        <span className={styles.priceSymbol}>$</span>
-                        {new Intl.NumberFormat('es-AR').format(totalPrice)}
-                    </div>
-
-                    {/* Quantity Selector */}
-                    <div className={styles.qtyContainer}>
-                        <button
-                            disabled={isOutOfStock}
-                            onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                            className={styles.qtyBtn}
-                        >
-                            <Minus size={14} strokeWidth={4} />
-                        </button>
-                        <span className={styles.qtyValue}>{quantity}</span>
-                        <button
-                            disabled={isOutOfStock}
-                            onClick={() => setQuantity(quantity + 1)}
-                            className={styles.qtyBtn}
-                        >
-                            <Plus size={14} strokeWidth={4} />
-                        </button>
-                    </div>
-                </div>
-
-                <button
-                    disabled={isOutOfStock}
-                    className={styles.addToCartBtn}
-                    onClick={handleAddToCart}
+                <div
+                    className={styles.imageContainer}
+                    onClick={() => setIsModalOpen(true)}
+                    style={{ cursor: 'pointer' }}
                 >
-                    {isOutOfStock ? 'AGOTADO 😿' : '¡LO QUIERO! 😋'}
-                </button>
+                    {product.image ? (
+                        <img src={product.image} alt={product.name} style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                        }} />
+                    ) : (
+                        <span>{product.name}</span>
+                    )}
+
+                    {/* Overlay de Sin Stock */}
+                    {isOutOfStock && (
+                        <div style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '100%',
+                            backgroundColor: 'rgba(0,0,0,0.4)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            zIndex: 3,
+                            color: 'white',
+                            backdropFilter: 'blur(2px)'
+                        }}>
+                            <div style={{ fontSize: '4rem', marginBottom: '0.5rem', filter: 'grayscale(1)' }}>🌰💧</div>
+                            <span style={{
+                                background: '#ff4444',
+                                padding: '4px 12px',
+                                borderRadius: '50px',
+                                fontWeight: 900,
+                                fontSize: '0.9rem',
+                                letterSpacing: '1px'
+                            }}>SIN STOCK</span>
+                            <p style={{ margin: '5px 0 0', fontSize: '0.7rem', fontWeight: 600 }}>Pronto volveremos...</p>
+                        </div>
+                    )}
+
+                    {product.isBestSeller && !isOutOfStock && (
+                        <span style={{
+                            position: 'absolute', top: 10, left: 10, background: 'var(--secondary)', color: 'black',
+                            padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: '600', zIndex: 2
+                        }}>
+                            Bestseller
+                        </span>
+                    )}
+
+                    {/* Indicador de "Ver más" */}
+                    <div style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        background: 'linear-gradient(to top, rgba(0,0,0,0.7), transparent)',
+                        padding: '2rem 1rem 0.5rem',
+                        opacity: 0,
+                        transition: 'opacity 0.3s ease',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'flex-end',
+                        pointerEvents: 'none'
+                    }}
+                        className="view-more-overlay"
+                    >
+                        <span style={{
+                            color: 'white',
+                            fontSize: '0.85rem',
+                            fontWeight: '700',
+                            letterSpacing: '0.5px'
+                        }}>
+                            👁️ Ver detalles
+                        </span>
+                    </div>
+                </div>
+
+                <div className={styles.productInfo}>
+                    <div className={styles.productCategory}>{product.category}</div>
+                    <h3
+                        className={styles.productName}
+                        onClick={() => setIsModalOpen(true)}
+                        style={{ cursor: 'pointer', transition: 'color 0.2s ease' }}
+                        onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary)'}
+                        onMouseLeave={(e) => e.currentTarget.style.color = ''}
+                    >
+                        {product.name}
+                    </h3>
+
+                    <p className={styles.productDescription} style={{
+                        fontSize: '0.85rem',
+                        color: 'var(--text-secondary)',
+                        marginBottom: '1rem',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        minHeight: '2.5rem'
+                    }}>
+                        {product.description}
+                    </p>
+
+                    {/* Weights Selector */}
+                    <div className={styles.weightSelector} style={{ display: 'flex', gap: '4px', marginBottom: '1rem' }}>
+                        {WEIGHT_OPTIONS.map((opt) => (
+                            <button
+                                key={opt.value}
+                                disabled={isOutOfStock}
+                                onClick={() => setSelectedWeight(opt)}
+                                style={{
+                                    flex: 1,
+                                    padding: '6px 2px',
+                                    fontSize: '0.75rem',
+                                    borderRadius: '8px',
+                                    border: selectedWeight.value === opt.value ? '2px solid var(--primary)' : '1px solid #ddd',
+                                    background: isOutOfStock ? '#eee' : (selectedWeight.value === opt.value ? 'var(--primary)' : 'white'),
+                                    color: selectedWeight.value === opt.value ? 'white' : '#666',
+                                    fontWeight: 700,
+                                    cursor: isOutOfStock ? 'not-allowed' : 'pointer',
+                                    transition: 'all 0.2s ease'
+                                }}
+                            >
+                                {opt.label}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Info de precio y cantidad */}
+                    <div className={styles.priceQtyWrapper}>
+                        <div className={styles.productPriceBadge}>
+                            <span className={styles.priceSymbol}>$</span>
+                            {new Intl.NumberFormat('es-AR').format(totalPrice)}
+                        </div>
+
+                        {/* Quantity Selector */}
+                        <div className={styles.qtyContainer}>
+                            <button
+                                disabled={isOutOfStock}
+                                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                className={styles.qtyBtn}
+                            >
+                                <Minus size={14} strokeWidth={4} />
+                            </button>
+                            <span className={styles.qtyValue}>{quantity}</span>
+                            <button
+                                disabled={isOutOfStock}
+                                onClick={() => setQuantity(quantity + 1)}
+                                className={styles.qtyBtn}
+                            >
+                                <Plus size={14} strokeWidth={4} />
+                            </button>
+                        </div>
+                    </div>
+
+                    <button
+                        disabled={isOutOfStock}
+                        className={styles.addToCartBtn}
+                        onClick={handleAddToCart}
+                    >
+                        {isOutOfStock ? 'AGOTADO 😿' : '¡LO QUIERO! 😋'}
+                    </button>
+                </div>
+
+                <style jsx>{`
+                    .${styles.imageContainer}:hover .view-more-overlay {
+                        opacity: 1;
+                    }
+                `}</style>
             </div>
-        </div>
+        </>
     );
 }
 

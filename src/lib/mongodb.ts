@@ -7,8 +7,8 @@ const isVercel = process.env.VERCEL === '1' || !!process.env.NOW_REGION;
 const standardUri = process.env.MONGODB_URI || "";
 
 const options = {
-    serverSelectionTimeoutMS: 4000,
-    connectTimeoutMS: 4000,
+    serverSelectionTimeoutMS: 15000,
+    connectTimeoutMS: 15000,
 };
 
 let client: MongoClient;

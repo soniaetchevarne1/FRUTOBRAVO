@@ -123,8 +123,8 @@ export async function syncDatabaseAction() {
 
         const { MongoClient } = await import('mongodb');
         const client = new MongoClient(directUri, {
-            serverSelectionTimeoutMS: 4000, // Reducido para que no se cuelgue
-            connectTimeoutMS: 4000
+            serverSelectionTimeoutMS: 15000, // Aumentado para conexiones lentas
+            connectTimeoutMS: 15000
         });
         await client.connect();
         const db = client.db('frutosbravos');
